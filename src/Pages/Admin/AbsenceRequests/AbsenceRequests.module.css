@@ -1,0 +1,72 @@
+.container {
+    overflow-x: auto;
+}
+
+table{
+    width: 100%;
+    font-size: 14px;
+}
+
+
+.buttons {
+    margin: 20px 0;
+}
+
+.addUserBtn {
+    padding: 8px 10px;
+    border-radius: 5px;
+    color: var(--text-white);
+    background-color: var(--color-success);
+    transition: all .3s ease;
+}
+
+.addUserBtn:hover {
+    background-color: var(--theme-dark-bg);
+}
+
+.addUserBtn span {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+th {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 10px 5px;
+    border-bottom: 1px solid #dddddd;
+}
+
+th span {
+    text-transform: lowercase;
+}
+
+.name, .reason {
+    text-align: left;
+}
+
+.status, .processor, .duration {
+    text-align: center;
+}
+
+
+.name {
+    min-width: 150px
+}
+
+.duration {
+    min-width: 100px;
+}
+
+.reason {
+    width: 15%;
+    min-width: 300px;
+}
+
+.status {
+    min-width: 100px;
+}
+
+.processor {
+    min-width: 200px;
+}

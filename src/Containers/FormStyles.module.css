@@ -1,0 +1,144 @@
+
+.formInput {
+    position: relative;
+    margin-bottom: 20px;
+    vertical-align: top;
+    box-sizing: border-box;
+}
+
+.formInput > * {
+    display: block;
+    margin: 5px 0;
+}
+
+.formInput > label {
+    font-weight: 600;
+    width: fit-content;
+}
+
+.formInput input, .formInput select {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #b2bad1;
+    box-sizing: border-box;
+}
+
+.formInput select {
+    text-transform: capitalize;
+}
+
+.formInput input:disabled, .formInput select:disabled {
+    background-color: #e2e2e2;
+    border: none;
+}
+
+
+.fileInput, .imageUploader {
+    width: 300px !important;
+    height: 50px;
+    cursor: pointer;
+}
+
+.fileInput {
+    position: absolute;
+    opacity: 0;
+
+}
+
+.imageUploader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.imageUploader span {
+    font-size: 28px;
+    color: var(--theme-dark-bg);
+}
+
+.imageUploader > div {
+    margin: 0 0 0 20px ;
+}
+
+.imageUploader > div > p {
+    margin: 3px 0;
+}
+
+.imageUploader > div > p:last-child {
+    font-size: 14px;
+    color: #4a5073;
+}
+
+.imageContainer {
+    width: 80px;
+    height: 80px;
+}
+
+.imageContainer img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.buttons {
+    width: 100%;
+    text-align: center;
+}
+
+.saveButton, .editButton {
+    width: 130px;
+    font-size: 1.02rem;
+    padding: 10px 15px;
+    background-color: var(--color-success);
+    color: var(--text-white);
+    font-weight: 700;
+    transition: all .4s ease;
+}
+
+.editButton {
+    background-color: var(--color-info);
+}
+
+.saveButton:not(:disabled):hover, 
+.editButton:not(:disabled):hover {
+    background-color: var(--theme-dark-bg);
+}
+
+.inputFootnote {
+    font-size: 11px;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+
+@media (min-width: 991px) {
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }   
+    
+    .formInput {
+        display: inline-block;
+        width: 48%;
+        box-sizing: border-box;
+    }    
+
+    .formContainer > div:last-child {
+        margin-top: 40px;
+    }
+}
+
+
+@media (min-width: 1400px) {
+    .formContainer {
+        width: var(--max-page-main-content-width);
+        margin: 0 auto;
+    }
+
+}

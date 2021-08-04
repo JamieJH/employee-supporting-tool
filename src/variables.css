@@ -1,0 +1,50 @@
+:root {
+    --theme-dark-bg: #262b40;
+    --theme-light-bg: #f5f8fb;
+    --text-white: #ffffff;
+    --text-dark: #1a1a1a;    
+    --menu-bar-width: 25px;
+
+    --z-index-spinner: 100;
+    --z-index-modal: 99;
+    --z-index-menu-toggler: 98;
+    --z-index-sidebar: 97;
+    
+    --headbar-text-color: var(--text-white);
+    --headbar-shadow-color: #000000;
+    --headbar-height: 80px;
+    --headbar-padding-x: 20px;
+    --headbar-padding-y: 15px; 
+    
+    --sidebar-width-open: 100%;
+    --sidebar-padding: 15px;
+    --sidebar-transition: all .5s ease;
+
+    --color-danger: #e15b69;
+    --color-danger-text: #ce2626;
+
+    --color-success: #45c39d;
+
+    --color-warning: #ffb200;
+
+    --color-info: #5197d8;
+
+
+    --color-profile-image: #1b998b;
+    
+}
+
+@media (min-width: 768px) {
+    :root {
+        --sidebar-width-open: 250px;
+        --sidebar-width-close: 100px;
+        --headbar-text-color: var(--text-dark);
+        --headbar-shadow-color: #d3d3d3;
+    }
+}
+
+@media (min-width: 1400px) {
+    :root {
+        --max-page-main-content-width: 1000px
+    }
+}

@@ -1,0 +1,21 @@
+
+main {
+    width: 100%;
+}
+
+.mainContent {
+    padding: 20px;
+}
+
+@media (min-width: 768px) {
+
+    main {
+        width: calc(100% - var(--sidebar-width-open));
+        float: right;
+        transition: var(--sidebar-transition);
+    }
+
+    main.collapsed {
+        width: calc(100% - var(--sidebar-width-close));
+    }
+}

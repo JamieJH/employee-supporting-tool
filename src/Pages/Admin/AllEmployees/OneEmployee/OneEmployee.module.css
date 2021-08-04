@@ -1,0 +1,25 @@
+td {
+    text-transform: capitalize;
+    vertical-align: middle;
+    height: 45px;
+    padding: 10px 7px;
+    border-bottom: 1px solid #dddddd;
+}
+
+.checkbox {
+    text-align: center;
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+
+
+.name, .email, .date {
+    text-align: left;
+}
+
+.position, .remove, .actions {
+    text-align: center;
+}

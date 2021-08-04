@@ -1,11 +1,43 @@
+@import url('./variables.css');
 body {
+  background-color: var(--theme-light-bg);
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    sans-serif; */
+    /* font-family: 'Maven Pro', sans-serif; */
+    font-family: 'Nunito Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
+button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+input, select, option {
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: var(--text-white);
+}
+
+table {
+  border-spacing: 0;
+}
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
