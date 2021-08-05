@@ -20,17 +20,18 @@ export const userDetailsPropTypes = PropTypes.exact({
 })
 
 export const absenceRequestDetailsPropTypes = PropTypes.exact({
-    acceptedBy: PropTypes.string,
+    processorId: PropTypes.string,
     employeeId: PropTypes.string.isRequired,
-    from: PropTypes.oneOfType([
+    fromDate: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
     ]).isRequired,
     id: PropTypes.string.isRequired,
     reason: PropTypes.string.isRequired,
     status: PropTypes.oneOf(["approved", "pending", "denied"]).isRequired,
-    to: PropTypes.oneOfType([
+    toDate: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
     ]).isRequired,
+    processorComment: PropTypes.string
 })

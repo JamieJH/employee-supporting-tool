@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import firebase from 'firebase/app';
 import 'firebase/database';
-import Spinner from '../../../Components/UI/Spinner/Spinner';
-import PageHeader from '../../../Components/UI/PageHeader/PageHeader';
-import PageMainContainer from '../../../Components/UI/PageMainContainer/PageMainContainer';
+import Spinner from '../../../../Components/UI/Spinner/Spinner';
+import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
+import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
 import OneAbsenceRequest from './OneAbsenceRequest/OneAbsenceRequest';
 
 import styles from './AbsenceRequests.module.css';
+import { Link } from 'react-router-dom';
 
 class AbsenceRequests extends Component {
     constructor(props) {
@@ -21,7 +21,7 @@ class AbsenceRequests extends Component {
     }
 
     componentDidMount() {
-        firebase.database().ref('/absent-requests')
+        firebase.database().ref('/absence-requests')
             .once('value')
             .then(snapshot => {
                 return snapshot.val();
@@ -62,6 +62,10 @@ class AbsenceRequests extends Component {
                         description="Review, approve, or deny requests"
                     />
                     <div className={styles.buttons}>
+                        <Link className={styles.addUserBtn} to="/new-request">
+                            <i className="fas fa-plus"></i>
+                            <span>New Request</span>
+                        </Link>
                     </div>
                     <PageMainContainer>
                         <div className={styles.container}>
