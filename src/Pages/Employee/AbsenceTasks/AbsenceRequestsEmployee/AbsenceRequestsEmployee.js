@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
-import firebase from 'firebase/app';
-import 'firebase/database';
+import { connect } from 'react-redux';
 import Spinner from '../../../../Components/UI/Spinner/Spinner';
 import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
 import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
-import OneAbsenceRequest from './OneAbsenceRequest/OneAbsenceRequest';
+import OneAbsenceRequestEmployee from './OneAbsenceRequestEmployee/OneAbsenceRequestEmployee';
 import AddDataButton from '../../../../Components/UI/AddDataButton/AddDataButton';
 import CustomTable from '../../../../Components/CustomTable/CustomTable';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
-import styles from './AbsenceRequests.module.css';
+import styles from './AbsenceRequestsEmployee.module.css';
 
-class AbsenceRequests extends Component {
+class AbsenceRequestsEmployee extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -22,12 +23,13 @@ class AbsenceRequests extends Component {
     }
 
     componentDidMount() {
-        firebase.database().ref('/absence-requests')
+        firebase.database().ref('/absence-requests').orderByChild('employeeId').equalTo(this.props.employeeId)
             .once('value')
             .then(snapshot => {
                 return snapshot.val();
             })
             .then(data => {
+                console.log(data);
                 const requests = [];
                 for (const [id, details] of Object.entries(data)) {
                     details.id = id;
@@ -49,7 +51,7 @@ class AbsenceRequests extends Component {
         }
 
         return requests.map(request => {
-            return <OneAbsenceRequest key={request.id} details={request} />;
+            return <OneAbsenceRequestEmployee key={request.id} details={request} />;
         })
     }
 
@@ -60,21 +62,20 @@ class AbsenceRequests extends Component {
                 <React.Fragment>
                     <PageHeader
                         title="Absent Requests"
-                        description="Review, approve, or deny requests"
+                        description="Review all absence requests you have made."
                     />
                     <div className={styles.buttons}>
-                        <AddDataButton title="Add Request" path="/new-request" />
+                        <AddDataButton title="New Request" path="/new-request-employee" />
                     </div>
                     <PageMainContainer>
                         <CustomTable>
                             <thead>
                                 <tr>
-                                    <th className={styles.name}>Name</th>
-                                    <th className={styles.duration}>duration</th>
                                     <th className={styles.reason}>Reason</th>
+                                    <th className={styles.duration}>duration</th>
                                     <th className={styles.status}>Status</th>
                                     <th className={styles.processor}>processor</th>
-                                    <th className={styles.actions}>Actions</th>
+                                    <th className={styles.processorComment}>Comment</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,4 +89,10 @@ class AbsenceRequests extends Component {
     }
 }
 
-export default AbsenceRequests;
+const mapStateToProps = (state) => {
+    return {
+        employeeId: state.auth.userId
+    }
+}
+
+export default connect(mapStateToProps, null)(AbsenceRequestsEmployee);

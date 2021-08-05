@@ -1,0 +1,17 @@
+
+.addButton {
+    padding: 8px 10px;
+    border-radius: 5px;
+    color: var(--text-white);
+    background-color: var(--color-success);
+    transition: all .3s ease;
+}
+
+.addButton:hover {
+    background-color: var(--theme-dark-bg);
+}
+
+.addButton span {
+    display: inline-block;
+    margin-left: 10px;
+}

@@ -26,7 +26,7 @@ export const absenceRequestDetailsPropTypes = PropTypes.exact({
         PropTypes.string,
         PropTypes.number
     ]).isRequired,
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string,
     reason: PropTypes.string.isRequired,
     status: PropTypes.oneOf(["approved", "pending", "denied"]).isRequired,
     toDate: PropTypes.oneOfType([

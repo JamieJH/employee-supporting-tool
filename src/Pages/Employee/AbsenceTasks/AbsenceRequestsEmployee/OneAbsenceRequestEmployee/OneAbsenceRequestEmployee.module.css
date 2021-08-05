@@ -1,15 +1,4 @@
-.nameEmail>div {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-}
-
-.nameEmailText{
-    display: flex;
-    flex-flow: column;
-}
-
-.nameEmailText p {
+.processor p {
     margin: 3px 0;
 }
 
@@ -19,20 +8,12 @@
     text-transform: lowercase;
 }
 
-
-.email {
-    text-transform: lowercase;
-}
-
 .status {
     font-weight: 700;
 }
 
-.actions {
-    white-space: nowrap;
-}
 
-.processor, .status, .actions, .duration {
+.status, .duration {
     text-align: center;
 }
 

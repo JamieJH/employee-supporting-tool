@@ -1,43 +1,5 @@
-.container {
-    overflow-x: auto;
-}
-
-table{
-    width: 100%;
-}
-
-
 .buttons {
     margin: 20px 0;
-}
-
-.addUserBtn {
-    padding: 8px 10px;
-    border-radius: 5px;
-    color: var(--text-white);
-    background-color: var(--color-success);
-    transition: all .3s ease;
-}
-
-.addUserBtn:hover {
-    background-color: var(--theme-dark-bg);
-}
-
-.addUserBtn span {
-    display: inline-block;
-    margin-left: 10px;
-}
-
-th {
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 13px;
-    padding: 10px 5px;
-    border-bottom: 1px solid #dddddd;
-}
-
-th span {
-    text-transform: lowercase;
 }
 
 .name, .email, .date {
@@ -47,35 +9,3 @@ th span {
 .position, .remove {
     text-align: center;
 }
-
-
-
-
-
-/* .checkbox {
-    width: 7%;
-    min-width: 40px;
-}
-
-.name {
-    width: 20%;
-    min-width: 150px
-}
-
-.email {
-    width: 15%;
-    min-width: 100px;
-}
-
-.position {
-    width: 15%;
-    min-width: 100px;
-}
-
-.date {
-    width: 10%;
-}
-
-.remove {
-    width: 10%;
-} */

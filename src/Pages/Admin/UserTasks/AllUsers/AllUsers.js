@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import Spinner from '../../../../Components/UI/Spinner/Spinner';
-import { Link } from 'react-router-dom';
 import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
+import AddDataButton from '../../../../Components/UI/AddDataButton/AddDataButton';
 import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
 import OneUser from './OneUser/OneUser';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
 import styles from './AllUsers.module.css';
+import CustomTable from '../../../../Components/CustomTable/CustomTable';
 
 class AllUsers extends Component {
     constructor(props) {
@@ -85,28 +86,22 @@ class AllUsers extends Component {
                         description="Review, remove an employee"
                     />
                     <div className={styles.buttons}>
-                        <Link className={styles.addUserBtn} to="/add-user">
-                            <i className="fas fa-plus"></i>
-                            <span>Add New User</span>
-                        </Link>
-
+                        <AddDataButton title="New User" path="/add-user" />
                     </div>
                     <PageMainContainer >
-                        <div className={styles.container}>
-                            <table className={styles.table} ref={this.tableRef}>
-                                <thead>
-                                    <tr>
-                                        <th className={styles.name}>Name</th>
-                                        <th className={styles.position}>Position</th>
-                                        <th className={styles.date}>Date Started</th>
-                                        <th className={styles.actions}>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {this.getUsersContentToDisplay()}
-                                </tbody>
-                            </table>
-                        </div>
+                        <CustomTable>
+                            <thead>
+                                <tr>
+                                    <th className={styles.name}>Name</th>
+                                    <th className={styles.position}>Position</th>
+                                    <th className={styles.date}>Date Started</th>
+                                    <th className={styles.actions}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.getUsersContentToDisplay()}
+                            </tbody>
+                        </CustomTable>
 
                     </PageMainContainer>
                 </React.Fragment>

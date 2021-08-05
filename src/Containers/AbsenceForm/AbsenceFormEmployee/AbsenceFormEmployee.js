@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import firebase from 'firebase';
-import 'firebase/database';
+import { connect } from 'react-redux';
+import { dateStringToTimestampSecs } from '../../../utils/commonMethods'
 
 import styles from '../../FormStyles.module.css';
 
@@ -17,12 +17,19 @@ class AbsenceFormEmployee extends Component {
         this.reasonChangeHandler = this.reasonChangeHandler.bind(this);
         this.toDateChangeHandler = this.toDateChangeHandler.bind(this);
         this.fromDateChangeHandler = this.fromDateChangeHandler.bind(this);
-        this.checkEmployeeEmailExist = this.getUserFromEmployeeEmail.bind(this);
     }
 
 
     formSubmitHandler(e) {
-        e.preventDefault();        
+        e.preventDefault();     
+        const requestDetails = {
+            employeeId: this.props.employeeId,
+            reason: this.state.reason,
+            toDate: dateStringToTimestampSecs(this.state.toDate),
+            fromDate: dateStringToTimestampSecs(this.state.fromDate),
+            status: 'pending'
+        }
+        this.props.onSubmitHandler(requestDetails)   
     }
 
     reasonChangeHandler(e) {
@@ -37,19 +44,6 @@ class AbsenceFormEmployee extends Component {
         })
     }
 
-    async getUserFromEmployeeEmail() {
-        return firebase.database().ref('/users')
-            .orderByChild('email')
-            .equalTo(this.state.employeeEmail)
-            .once('value')
-            .then(snapshot => {
-                return snapshot.val();
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-    }
-
     toDateChangeHandler(e) {
         this.setState({
             toDate: e.target.value
@@ -57,7 +51,6 @@ class AbsenceFormEmployee extends Component {
     }
 
     render() {
-        console.log(this.state);
         return (
             <div className={styles.formContainer}>
                 <form onSubmit={this.formSubmitHandler} ref={this.formRef}>
@@ -96,4 +89,10 @@ class AbsenceFormEmployee extends Component {
     }
 }
 
-export default AbsenceFormEmployee;
+const mapStateToProps = (state) => {
+    return {
+        employeeId: state.auth.userId
+    }
+}
+
+export default connect(mapStateToProps, null)(AbsenceFormEmployee);

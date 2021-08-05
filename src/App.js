@@ -11,8 +11,10 @@ import AddUser from './Pages/Admin/UserTasks/AddUser/AddUser';
 import EditUser from './Pages/Admin/UserTasks/EditUser/EditUser';
 import ProtectedRoute from './Components/Navigation/ProtectedRoute';
 import AbsenceRequests from './Pages/Admin/AbsenceTasks/AbsenceRequests/AbsenceRequests';
-import AddAbsenceRequest from './Pages/Common/AddAbsenceRequest/AddAbsenceRequest';
 import EditAbsenceReqeust from './Pages/Admin/AbsenceTasks/EditAbsenceRequest/EditAbsenceRequest';
+import AbsenceRequestsEmployee from './Pages/Employee/AbsenceTasks/AbsenceRequestsEmployee/AbsenceRequestsEmployee';
+import AddAbsenceRequestAdmin from './Pages/Admin/AbsenceTasks/AddAbsenceRequest/AddAbsenceRequest';
+import AddAbsenceRequestEmployee from './Pages/Employee/AbsenceTasks/AddAbsenceRequestEmployee/AddAbsenceRequestEmployee';
 
 class App extends Component {
 
@@ -38,11 +40,14 @@ class App extends Component {
                                 <ProtectedRoute path="/employees" exact component={AllUsers} allowedRoles={["admin", "superadmin"]} />
                                 <ProtectedRoute path="/add-user" exact component={AddUser} allowedRoles={["admin", "superadmin"]} />
                                 <ProtectedRoute path="/absence-requests" exact component={AbsenceRequests} allowedRoles={["admin", "superadmin"]} />
-                                <ProtectedRoute
-                                    path="/edit-request/:requestId" exact
+                                <ProtectedRoute path="/new-request" exact component={AddAbsenceRequestAdmin} allowedRoles={["admin", "superadmin"]}/>
+                                <ProtectedRoute path="/edit-request/:requestId" exact
                                     component={EditAbsenceReqeust}
                                     allowedRoles={["admin", "superadmin"]} />
-                                <Route path="/new-request" exact component={AddAbsenceRequest} />
+
+                                <ProtectedRoute path="/absence-requests-employee" exact component={AbsenceRequestsEmployee} allowedRoles={["employee"]} />
+                                <ProtectedRoute path="/new-request-employee" exact component={AddAbsenceRequestEmployee} allowedRoles={["employee"]}/>
+                                
                                 <Route path="/" component={() => <HomePage />} />
                             </Switch>
                         </Layout>
