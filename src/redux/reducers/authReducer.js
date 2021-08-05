@@ -11,23 +11,23 @@ const pages = {
         title: "salary",
         link: "/salary",
         icon: "fa-money-check-alt",
+    },{
+        title: "Absence Requests",
+        link: "/absence-requests-employee",
+        icon: "fa-calendar-minus",
+    },{
+        title: "Log OT",
+        link: "/log-ot",
+        icon: "fa-business-time",
     }],
     admin: [{
         title: "All Employees",
         link: "/employees",
         icon: "fa-users",
-    }, {
-        title: "Add User",
-        link: "/add-user",
-        icon: "fa-user-plus",
-    }, {
+    },{
         title: "Absence Requests",
         link: "/absence-requests",
         icon: "fa-calendar-minus",
-    },{
-        title: "New Request",
-        link: "/new-request",
-        icon: "fa-file-signature",
     }],
     superadmin: [{
         title: "Change Settings",

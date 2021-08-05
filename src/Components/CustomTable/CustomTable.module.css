@@ -1,0 +1,28 @@
+.container {
+    overflow-x: auto;
+}
+
+table{
+    width: 100%;
+    font-size: 14px;
+}
+
+th {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 10px 5px;
+    border-bottom: 1px solid #dddddd;
+}
+
+th span {
+    text-transform: lowercase;
+}
+
+td {
+    text-transform: capitalize;
+    vertical-align: middle;
+    height: 45px;
+    padding: 10px;
+    border-bottom: 1px solid #dddddd;
+}
