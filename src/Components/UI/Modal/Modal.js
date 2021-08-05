@@ -57,7 +57,6 @@ class Modal extends Component {
     }
 
     getModalTitle() {
-        console.log(this.props);
         if (!this.props.title) {
             switch (this.props.type) {
                 case "error":
@@ -79,11 +78,6 @@ class Modal extends Component {
         const okButtonMessage = this.props.okMessage;
         const cancelButtonMessage = this.props.cancelMessage;
 
-        const okButton = (okButtonMessage !== undefined)
-            && <button
-                className={styles.okButton}
-                onClick={this.onOkButtonClickedHandler}>
-                {okButtonMessage}</button>
 
         const cancelButton = (cancelButtonMessage !== undefined)
             && <button
@@ -101,7 +95,10 @@ class Modal extends Component {
                         <p>{this.props.content}</p>
                     </div>
                     <div className={styles.buttons}>
-                        {okButton}
+                        <button
+                            className={styles.okButton}
+                            onClick={this.onOkButtonClickedHandler}>
+                            {okButtonMessage || 'OK'}</button>
                         {cancelButton}
                     </div>
                 </div>

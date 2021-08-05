@@ -2,12 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { userDetailsPropTypes } from '../../utils/customPropTypes';
 import { timestampMsToInputDate, dateStringToTimestampSecs } from '../../utils/commonMethods';
-import Modal from '../../Components/UI/Modal/Modal';
-import Spinner from '../../Components/UI/Spinner/Spinner';
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/database';
-import 'firebase/storage';
 
 import styles from '../FormStyles.module.css';
 import { connect } from 'react-redux';
@@ -17,16 +11,9 @@ class UserDetailsForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            action: 'add',
             isEditing: false,
-            isLoading: false,
             uploadedImageFile: '',
             uploadedImageSource: '',
-            modal: {
-                count: 0,
-                title: '',
-                content: ''
-            }
         }
 
         this.todayDate = new Date().toISOString().split("T")[0];
@@ -43,31 +30,23 @@ class UserDetailsForm extends Component {
         this.dateStartedRef = React.createRef();
         this.imageRef = React.createRef();
 
-        this.addUserHandler = this.addUserHandler.bind(this);
-        this.editUserHandler = this.editUserHandler.bind(this);
+        this.enableEditing = this.enableEditing.bind(this);
         this.formSubmitHandler = this.formSubmitHandler.bind(this);
-        this.editButtonHandler = this.editButtonHandler.bind(this);
         this.getUserRoleOptions = this.getUserRoleOptions.bind(this);
         this.onImageUploadedHandler = this.onImageUploadedHandler.bind(this);
         this.getImageContainerToDisplay = this.getImageContainerToDisplay.bind(this);
-        this.toggleInputDisableAttribute = this.toggleInputDisableAttribute.bind(this);
+        this.toggleFormInputsDisabled = this.toggleFormInputsDisabled.bind(this);
 
     }
 
     componentDidMount() {
         if (this.props.action === "edit") {
-            this.toggleInputDisableAttribute(true);
+            this.toggleFormInputsDisabled(true);
         }
     }
 
-    async formSubmitHandler(e) {
+    formSubmitHandler(e) {
         e.preventDefault();
-        this.setState({
-            isLoading: true
-        })
-
-        let result;
-
         const userDetails = this.getInputsValues();
 
         if (this.props.action === "add") {
@@ -75,132 +54,16 @@ class UserDetailsForm extends Component {
             if (!isPasswordValid) {
                 const errorMessage = 'Password must contain at least 8 characters, including alphabetical letters and numbers.'
                 this.setModalState('error', 'Invalid Password', errorMessage);
-            } else {
-                result = await this.addUserHandler(userDetails)
+            }
+            else {
+                this.props.onSubmitHandler(userDetails, this.state.uploadedImageFile);
             }
         }
         else {
-            result = await this.editUserHandler(userDetails);
-
-            if (result.modal.type === 'success') {
-                result.modal.okButtonHandler = () => {
-                    this.setState({
-                        isEditing: false,
-                    })
-                    this.toggleInputDisableAttribute(true);
-                }
-            }
-        }
-
-        this.setModalState(result.modal.type, result.modal.title, result.modal.content, result.modal.okButtonHandler);
-
-    }
-
-    async addUserHandler(userDetails) {
-        let uid = '';
-        let errorMessage;
-
-        // insert user into authentication
-        await firebase.auth().createUserWithEmailAndPassword(userDetails.email, userDetails.password)
-            .then(response => {
-                uid = response.user.uid;
-            })
-            .catch(error => {
-                errorMessage = 'Something happened, please try again later!';
-                if (error.code === "auth/email-already-in-use") {
-                    errorMessage = 'This Email is associated with another user, try adding a number if you are sure this is a different user.';
-                }
-            });
-
-
-        // upload image to firebase and get url
-        if (!errorMessage && this.state.uploadedImageFile) {
-            const { isSuccessful, result } = await this.uploadImageToHost(this.state.uploadedImageFile, userDetails.fullName, uid);
-            if (isSuccessful) {
-                userDetails.image = result;
-            }
-            else {
-                errorMessage = result;
-            }
-        }
-
-        // insert user obj into database
-        if (!errorMessage) {
-            delete userDetails.password;
-            firebase.database().ref('/users').child(uid).set(userDetails)
-                .catch((_) => {
-                    errorMessage = 'Adding new User failed, please try again later!.';
-                })
-        }
-
-        const modalType = errorMessage ? 'error' : 'success';
-        const modalContent = errorMessage || 'New User added successfully.';
-        this.setModalState(modalType, '', modalContent)
-
-        if (!errorMessage) {
-            this.formRef.current.querySelectorAll("input").forEach(node => {
-                node.value = '';
-            })
+            this.props.onSubmitHandler(userDetails, this.state.uploadedImageFile);
         }
 
     }
-
-    async editUserHandler(userDetails) {
-        let modal = {};
-        const originalDetails = this.props.userDetails;
-
-
-        for (let field in userDetails) {
-            if (originalDetails[field] && originalDetails[field] === userDetails[field]) {
-                delete userDetails[field];
-            }
-        }
-        delete userDetails.password;
-
-
-        if (Object.keys(userDetails).length === 0 && !this.state.uploadedImageFile) {
-            modal.type = 'info'
-            modal.title = 'No Changes';
-            modal.content = 'You did not make any changes for this user';
-            return modal
-        }
-
-        // upload image to firebase and get url
-        if (this.state.uploadedImageFile) {
-            const { isSuccessful, result } = await this.uploadImageToHost(this.state.uploadedImageFile, originalDetails.fullName, originalDetails.id);
-            if (isSuccessful) {
-                userDetails.image = result;
-            }
-            else {
-                modal.type = 'error';
-                modal.content = result;
-                return modal;
-            }
-        }
-
-        console.log(userDetails);
-
-        // update user document
-        await firebase.database().ref('users/' + originalDetails.id)
-            .update(userDetails)
-            .catch(() => {
-                modal.type = 'error';
-                modal.content = 'Update has failed, please try again later!';
-            })
-
-
-        if (!modal.type) {
-            return {
-                modal: {
-                    type: 'success',
-                    content: 'User details were successfully updated!',
-                },
-                updatedFields: userDetails
-            }
-        }
-        return { modal };
-    }
-
 
 
     getInputsValues() {
@@ -216,31 +79,8 @@ class UserDetailsForm extends Component {
         }
     }
 
-    async uploadImageToHost(image, userFullName, userId) {
-        const storage = firebase.storage();
-        const imageName = `${userFullName.replaceAll(" ", "-")}-${userId}.jpg`;
-        const uploadImageTask = storage.ref('profile-images/' + imageName).put(image)
-        let result;
-        let isSuccessful = false;
 
-        await uploadImageTask.then(async () => {
-            await storage.ref('profile-images').child(imageName)
-                .getDownloadURL()
-                .then(url => {
-                    console.log(url);
-                    isSuccessful = true;
-                    result = url;
-                })
-        }).catch(error => {
-            console.log(error);
-            result = 'Image uploading failed, try again later, or create the user then add a profile image some other time.';
-        })
-
-        return { isSuccessful, result };
-    }
-
-
-    toggleInputDisableAttribute(isDisable) {
+    toggleFormInputsDisabled(isDisable) {
         if (isDisable) {
             this.formRef.current.querySelectorAll("input, select").forEach(input => {
                 input.setAttribute("disabled", true);
@@ -248,21 +88,9 @@ class UserDetailsForm extends Component {
         }
         else {
             this.formRef.current.querySelectorAll("input:not(#email, #password), select").forEach(input => {
-                if (input.id !== "email") {
-                    input.removeAttribute("disabled");
-                }
+                input.removeAttribute("disabled");
             })
         }
-    }
-
-    editButtonHandler(e) {
-        e.target.innerText = this.state.isEditing ? "Edit" : "Cancel";
-        this.toggleInputDisableAttribute(this.state.isEditing);
-        this.setState(state => {
-            return {
-                isEditing: !state.isEditing
-            }
-        })
     }
 
     onImageUploadedHandler(e) {
@@ -293,33 +121,6 @@ class UserDetailsForm extends Component {
             </div>
     }
 
-    setModalState(type, title, content, okButtonHandler = '') {
-        this.setState(state => {
-            return {
-                isLoading: false,
-                modal: {
-                    count: state.modal.count + 1,
-                    type: type,
-                    title: title,
-                    content: content,
-                    okButtonHandler: () => okButtonHandler()
-                }
-            }
-        })
-    }
-
-    getModalToDisplay() {
-        return this.state.modal.count !== 0 &&
-            <Modal
-                key={this.state.modal.count}
-                type={this.state.modal.type}
-                title={this.state.modal.title}
-                content={this.state.modal.content}
-                okMessage="OK"
-                okButtonHandler={this.state.modal.okButtonHandler}
-            />
-    }
-
     getUserRoleOptions() {
         if (this.props.role === "admin") {
             return ["employee"];
@@ -335,13 +136,30 @@ class UserDetailsForm extends Component {
         return regex.test(enteredPassword);
     }
 
+    enableEditing(e) {
+        e.preventDefault();
+        console.log("clicked");
+        this.setState({
+            isEditing: true
+        })
+        this.toggleFormInputsDisabled(false);
+    }
+
+    getFunctionButton() {
+        if (this.props.action === 'add' || this.state.isEditing) {
+            return <button type="submit" className={styles.saveButton}>Save</button>
+        }
+        else {
+            return <button type="button" onClick={this.enableEditing} className={styles.editButton}>Edit</button>
+        }
+    }
+
+
 
     render() {
-        console.log(this.props);
+        console.log(this.state);
         return (
             <div className={styles.formContainer}>
-                {this.props.action === "edit" &&
-                    <button className={styles.editButton} onClick={this.editButtonHandler}>Edit</button>}
                 <form onSubmit={this.formSubmitHandler} ref={this.formRef}>
                     <div className={styles.formInput}>
                         <label htmlFor="full-name">Full Name</label>
@@ -442,15 +260,9 @@ class UserDetailsForm extends Component {
                         {this.getImageContainerToDisplay()}
                     </div>
 
-                    {(this.state.isEditing || this.props.action === "add")
-                        ? <div className={styles.buttons}>
-                            <button type="submit" className={styles.saveButton}>Save</button>
-                        </div>
-                        : ''}
-                </form>
+                    {this.getFunctionButton()}
 
-                {this.getModalToDisplay()}
-                {this.state.isLoading ? <Spinner /> : ''}
+                </form>
             </div>
         );
     }
@@ -458,17 +270,14 @@ class UserDetailsForm extends Component {
 
 
 UserDetailsForm.propTypes = {
-    action: PropTypes.string,
-    role: PropTypes.oneOf(["admin", "superadmin"]),
-    location: PropTypes.object,
+    action: PropTypes.string.isRequired,
+    role: PropTypes.oneOf(["admin", "superadmin"]).isRequired,
     userDetails: userDetailsPropTypes
-
 }
 
 
 const mapStateToProp = (state) => {
     return {
-
         role: state.auth.role
     }
 }

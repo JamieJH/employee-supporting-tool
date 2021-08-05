@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import Spinner from '../../../Components/UI/Spinner/Spinner';
+import Spinner from '../../../../Components/UI/Spinner/Spinner';
 import { Link } from 'react-router-dom';
-import PageHeader from '../../../Components/UI/PageHeader/PageHeader';
-import PageMainContainer from '../../../Components/UI/PageMainContainer/PageMainContainer';
-import OneEmployee from './OneEmployee/OneEmployee';
+import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
+import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
+import OneUser from './OneUser/OneUser';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
-import styles from './AllEmployees.module.css';
+import styles from './AllUsers.module.css';
 
-class AllEmployees extends Component {
+class AllUsers extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,7 +20,7 @@ class AllEmployees extends Component {
         this.tableRef = React.createRef();
 
         this.checkAllHandler = this.checkAllHandler.bind(this);
-        this.getEmployeeContentToDisplay = this.getEmployeeContentToDisplay.bind(this);
+        this.getUsersContentToDisplay = this.getUsersContentToDisplay.bind(this);
     }
 
     componentDidMount() {
@@ -63,7 +63,7 @@ class AllEmployees extends Component {
     }
 
 
-    getEmployeeContentToDisplay() {
+    getUsersContentToDisplay() {
         const employeesList = this.state.employees
 
         if (employeesList && employeesList.length === 0) {
@@ -71,7 +71,7 @@ class AllEmployees extends Component {
         }
 
         return employeesList.map(employee => {
-            return <OneEmployee key={employee.id} details={employee} />;
+            return <OneUser key={employee.id} details={employee} />;
         })
     }
 
@@ -96,10 +96,6 @@ class AllEmployees extends Component {
                             <table className={styles.table} ref={this.tableRef}>
                                 <thead>
                                     <tr>
-                                        <th className={styles.checkbox}>
-                                            <input type="checkbox" id="checkbox-all" onChange={this.checkAllHandler} />
-                                            <label htmlFor="checkbox-all"></label>
-                                        </th>
                                         <th className={styles.name}>Name</th>
                                         <th className={styles.position}>Position</th>
                                         <th className={styles.date}>Date Started</th>
@@ -107,7 +103,7 @@ class AllEmployees extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {this.getEmployeeContentToDisplay()}
+                                    {this.getUsersContentToDisplay()}
                                 </tbody>
                             </table>
                         </div>
@@ -118,4 +114,4 @@ class AllEmployees extends Component {
     }
 }
 
-export default AllEmployees;
+export default AllUsers;

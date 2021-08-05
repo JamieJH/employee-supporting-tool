@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { absenceRequestDetailsPropTypes } from '../../../../utils/customPropTypes'
-import { timestampInSecsToDate } from '../../../../utils/commonMethods';
-import AvatarNameEmail from '../../../../Components/UI/AvatarNameEmail/AvatarNameEmail';
-import IconButton from '../../../../Components/UI/IconButton/IconButton';
+import { absenceRequestDetailsPropTypes } from '../../../../../utils/customPropTypes'
+import { timestampInSecsToDate } from '../../../../../utils/commonMethods';
+import AvatarNameEmail from '../../../../../Components/UI/AvatarNameEmail/AvatarNameEmail';
+import IconButton from '../../../../../Components/UI/IconButton/IconButton';
 import { connect } from 'react-redux';
-import Modal from '../../../../Components/UI/Modal/Modal';
+import Modal from '../../../../../Components/UI/Modal/Modal';
 import firebase from 'firebase';
 import 'firebase/database';
 
 import styles from './OneAbsenceRequest.module.css';
+import { Link } from 'react-router-dom';
 
 class OneAbsenceRequest extends Component {
     constructor(props) {
@@ -17,9 +18,7 @@ class OneAbsenceRequest extends Component {
         this.state = {
             isLoading: true,
             status: this.props.details.status,
-            modal: {
-                count: 0
-            },
+            modal: null,
         }
 
         this.processRequestHandler = this.processRequestHandler.bind(this);
@@ -29,7 +28,7 @@ class OneAbsenceRequest extends Component {
     componentDidMount() {
         const database = firebase.database();
         let userDetails = {};
-        let supervisor = '';
+        let processor = '';
 
         database.ref('/users/' + this.props.details.employeeId)
             .once('value')
@@ -44,14 +43,14 @@ class OneAbsenceRequest extends Component {
                 }
             })
             .then(async () => {
-                if (this.props.details.acceptedBy) {
-                    await database.ref('/users/' + this.props.details.acceptedBy + '/fullName')
+                if (this.props.details.processorId) {
+                    await database.ref('/users/' + this.props.details.processorId + '/fullName')
                         .once('value')
                         .then(snapshot => {
                             return snapshot.val();
                         })
                         .then(name => {
-                            supervisor = name;
+                            processor = name;
                         })
                 }
             })
@@ -59,7 +58,7 @@ class OneAbsenceRequest extends Component {
                 this.setState({
                     isLoading: false,
                     userDetails: userDetails,
-                    supervisor: supervisor,
+                    processor: processor,
                 })
             })
             .catch(err => {
@@ -71,59 +70,57 @@ class OneAbsenceRequest extends Component {
         this.setState({
             isLoading: true
         })
-        firebase.database().ref('/absent-requests/' + this.props.details.id)
+        firebase.database().ref('/absence-requests/' + this.props.details.id)
             .update({
-                acceptedBy: this.props.adminId,
+                processorId: this.props.adminId,
                 status: action
             })
-            .then(() => {
-                this.setState(state => {
-                    return {
-                        isLoading: false,
-                        status: action,
-                        modal: {
-                            count: state.modal.count + 1,
-                            type: "success",
-                            content: "This absent request has been successfully " + action,
-                            okMessage: "OK",
-                        }
+            .then((res) => {
+                console.log(res);
+                return {
+                    status: action,
+                    modal: {
+                        type: "success",
+                        content: "This absent request has been successfully " + action,
+                        okMessage: "OK",
                     }
-                })
+                }
             })
-            .catch(() => {
-                this.setState(state => {
-                    return {
-                        isLoading: false,
-                        modal: {
-                            count: state.modal.count + 1,
-                            type: "error",
-                            content: "Something went wrong, please try again later!"
-                        }
+            .catch((err) => {
+                console.log(err);
+                return {
+                    modal: {
+                        type: "error",
+                        content: "Something went wrong, please try again later!"
                     }
+                }
+            })
+            .then(stateDetails => {
+                console.log(stateDetails);
+                stateDetails.modal.key = Math.random();
+                this.setState({
+                    isLoading: false,
+                    ...stateDetails,
                 })
             })
     }
 
     onClickProcessButtonHandler(action) {
-        this.setState(state => {
-            return {
-                modal: {
-                    count: state.modal.count + 1,
-                    type: "warning",
-                    title: "Are you sure?",
-                    content: "Are you sure you want to approve/deny this absence request?",
-                    okMessage: "Proceed",
-                    okButtonHandler: () => this.processRequestHandler(action),
-                    cancelMessage: "Cancel"
-                }
+        this.setState({
+            modal: {
+                key: Math.random(),
+                type: "warning",
+                title: "Are you sure?",
+                content: "Are you sure you want to approve/deny this absence request?",
+                okMessage: "Proceed",
+                okButtonHandler: () => this.processRequestHandler(action),
+                cancelMessage: "Cancel"
             }
         })
     }
 
 
     render() {
-        console.log(this.props);
-
         const details = this.props.details;
 
         return this.state.isLoading
@@ -138,7 +135,7 @@ class OneAbsenceRequest extends Component {
                         />
                     </td>
                     <td className={styles.duration}>
-                        {timestampInSecsToDate(details.from)} - {timestampInSecsToDate(details.to)}
+                        {timestampInSecsToDate(details.fromDate)} - {timestampInSecsToDate(details.toDate)}
                     </td>
                     <td className={styles.reason}>
                         {details.reason}
@@ -146,16 +143,19 @@ class OneAbsenceRequest extends Component {
                     <td className={styles.status}>
                         {this.state.status}
                     </td>
-                    <td className={styles.supervisor}>
-                        {this.state.supervisor}
+                    <td className={styles.processor}>
+                        {this.state.processor}
                     </td>
                     <td className={styles.actions}>
-                        <IconButton
-                            fontAwesomeCode="fa-pen"
-                            type="info"
-                            title="edit details"
-                            onClick={() => console.log('edit')}
-                        />
+                        <Link to={{
+                            pathname: `/edit-request/${details.id}`,
+                            state: {
+                                processorFullName: this.state.processor
+                            }
+                        }}>
+                            <IconButton fontAwesomeCode="fa-pen" type="info" title="edit details" />
+                        </Link>
+
                         {this.state.status === 'pending' &&
                             <React.Fragment>
                                 <IconButton
@@ -173,10 +173,8 @@ class OneAbsenceRequest extends Component {
                             </React.Fragment>
                         }
                     </td>
-
                 </tr>
-                {this.state.modal.count !== 0 &&
-                    <Modal key={this.state.modal.count} {...this.state.modal} />}
+                {this.state.modal && <Modal key={this.state.modal.key} {...this.state.modal} />}
             </React.Fragment>
             ;
     }

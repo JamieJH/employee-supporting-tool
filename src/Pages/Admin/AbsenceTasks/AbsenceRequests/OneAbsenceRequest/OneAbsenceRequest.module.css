@@ -53,6 +53,6 @@ tr.pending .status {
     white-space: nowrap;
 }
 
-.supervisor, .status, .actions, .duration {
+.processor, .status, .actions, .duration {
     text-align: center;
 }
