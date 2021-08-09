@@ -5,6 +5,8 @@
     color: var(--text-white);
     background-color: var(--color-success);
     transition: all .3s ease;
+    margin-bottom: 20px;
+    display: inline-block;
 }
 
 .addButton:hover {

@@ -2,12 +2,12 @@
     overflow-x: auto;
 }
 
-table{
+.container table{
     width: 100%;
     font-size: 14px;
 }
 
-th {
+.container th {
     font-weight: 700;
     text-transform: uppercase;
     font-size: 13px;
@@ -15,14 +15,36 @@ th {
     border-bottom: 1px solid #dddddd;
 }
 
-th span {
+.container th span {
     text-transform: lowercase;
 }
 
-td {
+.container td[data-status] {
+    font-weight: bold;
+    text-align: center;
+}
+
+.container td[data-status="approved"] {
+    color: var(--color-success);
+}
+
+.container td[data-status="denied"] {
+    color: var(--color-danger);
+}
+
+.container td[data-status="pending"] {
+    color: var(--color-warning);
+}
+
+.container td {
     text-transform: capitalize;
     vertical-align: middle;
     height: 45px;
     padding: 10px;
     border-bottom: 1px solid #dddddd;
 }
+
+.container p {
+    margin: 3px 0;
+}
+

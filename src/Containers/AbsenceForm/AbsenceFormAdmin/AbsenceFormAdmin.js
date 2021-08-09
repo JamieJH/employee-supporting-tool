@@ -136,8 +136,8 @@ class AbsenceFormAdmin extends Component {
 
     render() {
         return (
-            <div className={styles.formContainer}>
-                <form onSubmit={this.formSubmitHandler} ref={this.formRef}>
+            <React.Fragment>
+                <form className={styles.form} onSubmit={this.formSubmitHandler} ref={this.formRef}>
                     <div className={styles.formInput}>
                         <label htmlFor="email">Employee Email</label>
                         <input type="text" id="email"
@@ -208,7 +208,7 @@ class AbsenceFormAdmin extends Component {
 
                     {this.getFunctionButton()}
                 </form>
-            </div>
+            </React.Fragment>
         );
     }
 }

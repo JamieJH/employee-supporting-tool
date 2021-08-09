@@ -1,11 +1,13 @@
-.buttons {
-    margin: 20px 0;
-}
 
-.name, .email, .date {
+.name {
     text-align: left;
 }
 
-.position, .remove {
-    text-align: center;
+
+.date {
+    min-width: 120px;
+}
+
+.position {
+    min-width: 150px;
 }

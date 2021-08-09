@@ -11,9 +11,7 @@ class Modal extends Component {
             isModalOpen: true
         }
 
-        this.getModalTitle = this.getModalTitle.bind(this);
         this.closeModalHandler = this.closeModalHandler.bind(this);
-        this.getHeadSectionToDisplay = this.getHeadSectionToDisplay.bind(this);
         this.onOkButtonClickedHandler = this.onOkButtonClickedHandler.bind(this);
         this.onCancelButtonClickedHandler = this.onCancelButtonClickedHandler.bind(this);
     }
@@ -64,7 +62,7 @@ class Modal extends Component {
                 case "success":
                     return "Great!";
                 case "warning":
-                    return "Warning";
+                    return "Are you sure?";
                 default:
                     return '';
             }
@@ -73,17 +71,21 @@ class Modal extends Component {
         return this.props.title;
     }
 
+    getModalContent() {
+        if (this.props.type === 'error' && !this.props.content) {
+            return 'Something went wrong, please try again later!';
+        }
+
+        return this.props.content;
+    }
+
 
     render() {
-        const okButtonMessage = this.props.okMessage;
-        const cancelButtonMessage = this.props.cancelMessage;
-
-
-        const cancelButton = (cancelButtonMessage !== undefined)
+        const cancelButton = (this.props.type === 'warning')
             && <button
                 className={styles.cancelButton}
                 onClick={this.onCancelButtonClickedHandler}>
-                {cancelButtonMessage}</button>
+                {this.props.cancelMessage || 'Cancel'}</button>
 
         const content = !this.state.isModalOpen ? ''
             : <React.Fragment>
@@ -92,13 +94,13 @@ class Modal extends Component {
                     {this.getHeadSectionToDisplay()}
                     <div className={styles.content}>
                         <h3>{this.getModalTitle()}</h3>
-                        <p>{this.props.content}</p>
+                        <p>{this.getModalContent()}</p>
                     </div>
                     <div className={styles.buttons}>
                         <button
                             className={styles.okButton}
-                            onClick={this.onOkButtonClickedHandler}>
-                            {okButtonMessage || 'OK'}</button>
+                            onClick={this.onOkButtonClickedHandler}
+                            >{this.props.type === 'warning' ? 'Continue' : 'OK'}</button>
                         {cancelButton}
                     </div>
                 </div>

@@ -6,18 +6,14 @@ export const timestampInSecsToDate = (timestamp) => {
     return new Date(timestamp * 1000).toLocaleDateString("en-UK");  // format dd/mm/yyyy
 }
 
-export const dateStringToInputTypeDateFormat = (dateString) => {
-    const [day, month, year] = dateString.split("/");
-    return `${year}-${month}-${day}`;
-}
-
 export const dateStringToTimestampSecs = (dateString) => {
     return new Date(dateString).getTime() / 1000;
 }
 
 export const timestampMsToInputDate = (timestamp) => {
     const dateString = timestampInSecsToDate(timestamp);
-    return dateStringToInputTypeDateFormat(dateString);
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month}-${day}`;
 }
 
 
@@ -50,8 +46,7 @@ export const getUserAssociatedWithId = (id) => {
 }
 
 export const uploadImageAndGetURL = (imageFile, imageName) => {
-    const storage = firebase.storage();
-    const storageRef = storage.ref('profile-images/' + imageName);
+    const storageRef = firebase.storage().ref('profile-images/' + imageName);
     return storageRef.put(imageFile)
         .then(() => {
             return storageRef.getDownloadURL()
@@ -61,4 +56,30 @@ export const uploadImageAndGetURL = (imageFile, imageName) => {
         }).catch(() => {
             return null;
         })
+}
+
+export const uploadMultipleFilesAndGetURLs = (files, filesNames) => {
+    const promises = files.map((file, index) => {
+        return firebase.storage().ref('ot-files/' + filesNames[index]).put(file)
+            .then(snapshot => {
+                return snapshot.ref.getDownloadURL();
+            })
+            .then(url => {
+                return {
+                    name: file.name,
+                    url: url
+                };                
+            })
+            .catch(() => {
+                return null;
+            })
+    })
+
+    return Promise.all(promises);
+}
+
+export const deleteMultipleFiles = (fileNames) => {
+    return fileNames.map(fileName => {
+        return firebase.storage().ref('ot-files').child(fileName).delete();
+    })
 }

@@ -3,81 +3,83 @@ import { connect } from 'react-redux';
 import Spinner from '../../../../Components/UI/Spinner/Spinner';
 import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
 import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
-import OneAbsenceRequestEmployee from './OneAbsenceRequestEmployee/OneAbsenceRequestEmployee';
 import AddDataButton from '../../../../Components/UI/AddDataButton/AddDataButton';
 import CustomTable from '../../../../Components/CustomTable/CustomTable';
 import firebase from 'firebase/app';
 import 'firebase/database';
+import OneOTLogAdmin from './OneOTLogAdmin/OneOTLogAdmin';
 
-import styles from './AbsenceRequestsEmployee.module.css';
+import styles from './AllOTLogsAdmin.module.css';
 
-class AbsenceRequestsEmployee extends Component {
+class AllOTLogsEmployee extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: true,
-            requests: null
+            logs: null
         }
 
-        this.getRequestsContentToDisplay = this.getRequestsContentToDisplay.bind(this);
+        this.getLogsContentToDisplay = this.getLogsContentToDisplay.bind(this);
+
     }
 
     componentDidMount() {
-        firebase.database().ref('/absence-requests').orderByChild('employeeId').equalTo(this.props.employeeId)
+        firebase.database().ref('/ot-logs')
             .once('value')
             .then(snapshot => {
                 return snapshot.val();
             })
             .then(data => {
                 console.log(data);
-                const requests = [];
+                const logs = [];
                 for (const [id, details] of Object.entries(data)) {
                     details.id = id;
-                    requests.push(details);
+                    logs.push(details);
                 }
 
                 this.setState({
                     isLoading: false,
-                    requests: requests
+                    logs: logs
                 })
             })
     }
 
-    getRequestsContentToDisplay() {
-        const requests = this.state.requests;
 
-        if (requests && requests.length === 0) {
-            return <tr><td colSpan="5">There are currently no requests</td></tr>;
+    getLogsContentToDisplay() {
+        const logs = this.state.logs;
+
+        if (logs && logs.length === 0) {
+            return <tr><td colSpan="5">There are currently no logs</td></tr>;
         }
 
-        return requests.map(request => {
-            return <OneAbsenceRequestEmployee key={request.id} details={request} />;
+        return logs.map(log => {
+            return <OneOTLogAdmin key={log.id} details={log} />;
         })
     }
 
     render() {
-        return (!this.state.requests)
+        return (!this.state.logs)
             ? <Spinner />
             : (
                 <React.Fragment>
                     <PageHeader
-                        title="Absent Requests"
-                        description="Review all absence requests you have made."
+                        title="OT Logs"
+                        description="Review the status of all logs you have made."
                     />
-                    <AddDataButton title="New Request" path="/new-request" />
+                    <AddDataButton title="Log OT" path="/log-ot" />
                     <PageMainContainer>
                         <CustomTable>
                             <thead>
                                 <tr>
-                                    <th className={styles.reason}>Reason</th>
-                                    <th className={styles.duration}>duration</th>
+                                    <th className={styles.employee}>Employee</th>
+                                    <th className={styles.dateTime}>Date and Time</th>
+                                    <th className={styles.workSummary}>Work summary</th>
                                     <th className={styles.status}>Status</th>
-                                    <th className={styles.processor}>processor</th>
-                                    <th className={styles.processorComment}>Comment</th>
+                                    <th className={styles.actions}>actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {this.getRequestsContentToDisplay()}
+                                {this.getLogsContentToDisplay()}
                             </tbody>
                         </CustomTable>
 
@@ -93,4 +95,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, null)(AbsenceRequestsEmployee);
+export default connect(mapStateToProps, null)(AllOTLogsEmployee);

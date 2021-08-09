@@ -3,6 +3,7 @@
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
+    /* justify-content: center; */
 }
 
 .nameEmailText{
@@ -18,27 +19,5 @@
     font-size: 12px;
     color: #4a5073;
     text-transform: lowercase;
-}
-
-
-.profileImage, .nameInitials {
-    height: 40px;
-    width: 40px;
-    min-width: 40px;
-    border-radius: 50%;
-    margin: 0 15px 0 0;
-}
-
-.profileImage {
-    object-fit: cover;
-}
-
-.nameInitials {
-    background-color: var(--color-profile-image);
-    text-transform: uppercase;
-    color: var(--text-white);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
+    width: 200px;
 }

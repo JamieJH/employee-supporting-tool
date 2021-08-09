@@ -35,3 +35,19 @@ export const absenceRequestDetailsPropTypes = PropTypes.exact({
     ]).isRequired,
     processorComment: PropTypes.string
 })
+
+export const OTLogDetailsPropTypes = PropTypes.exact({
+    id: PropTypes.string,
+    processorId: PropTypes.string,
+    employeeId: PropTypes.string.isRequired,
+    date: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+    ]).isRequired,
+    fromTime: PropTypes.string.isRequired,
+    toTime: PropTypes.string.isRequired,
+    status: PropTypes.oneOf(["approved", "pending", "denied"]).isRequired,
+    processorComment: PropTypes.string,
+    workSummary: PropTypes.string,
+    files: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string))
+})

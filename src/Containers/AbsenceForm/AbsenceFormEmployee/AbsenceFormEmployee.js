@@ -52,7 +52,7 @@ class AbsenceFormEmployee extends Component {
 
     render() {
         return (
-            <div className={styles.formContainer}>
+            <React.Fragment>
                 <form onSubmit={this.formSubmitHandler} ref={this.formRef}>
                     <div className={styles.formInput}>
                         <label htmlFor="reason">Reason</label>
@@ -84,7 +84,7 @@ class AbsenceFormEmployee extends Component {
 
                     <button className={styles.saveButton}>Submit</button>
                 </form>
-            </div>
+            </React.Fragment>
         );
     }
 }

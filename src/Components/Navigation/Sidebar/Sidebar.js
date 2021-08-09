@@ -30,7 +30,7 @@ class Sidebar extends Component {
                 <div className={styles.head}>
                     <div className={styles.user}>
                         <div className={styles.avatar}>
-                            <Avatar />
+                            <Avatar image={this.props.image} fullName={this.props.fullName} isCurrentUser='true' />
                         </div>
                         <span>Hi, {this.props.fullName}</span>
                     </div>
@@ -68,7 +68,8 @@ class Sidebar extends Component {
 const mapStateToProps = (state) => {
     return {
         pages: state.auth.pages,
-        fullName: state.auth.userDetails.fullName
+        fullName: state.auth.userDetails.fullName,
+        image: state.auth.userDetails.image
     }
 }
 

@@ -85,14 +85,13 @@ class AllUsers extends Component {
                         title="Employee List"
                         description="Review, remove an employee"
                     />
-                    <div className={styles.buttons}>
-                        <AddDataButton title="New User" path="/add-user" />
-                    </div>
+                    <AddDataButton title="New User" path="/add-user" />
                     <PageMainContainer >
                         <CustomTable>
                             <thead>
                                 <tr>
                                     <th className={styles.name}>Name</th>
+                                    <th className={styles.role}>user type</th>
                                     <th className={styles.position}>Position</th>
                                     <th className={styles.date}>Date Started</th>
                                     <th className={styles.actions}>Actions</th>
