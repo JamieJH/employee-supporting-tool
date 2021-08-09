@@ -1,0 +1,36 @@
+
+.fileInput, .fileInputUploader {
+    width: 300px !important;
+    height: 50px;
+    cursor: pointer;
+}
+
+.fileInput {
+    position: absolute;
+    opacity: 0;
+
+}
+
+.fileInputUploader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.fileInputUploader span {
+    font-size: 28px;
+    color: var(--theme-dark-bg);
+}
+
+.fileInputUploader > div {
+    margin: 0 0 0 20px ;
+}
+
+.fileInputUploader > div > p {
+    margin: 3px 0;
+}
+
+.fileInputUploader > div > p:last-child {
+    font-size: 14px;
+    color: #4a5073;
+}

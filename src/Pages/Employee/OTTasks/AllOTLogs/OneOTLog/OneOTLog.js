@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import AvatarNameEmail from '../../../../../Components/UI/AvatarNameEmail/AvatarNameEmail';
 import { timestampInSecsToDate, getUserAssociatedWithId } from '../../../../../utils/commonMethods';
-import { absenceRequestDetailsPropTypes } from '../../../../../utils/customPropTypes';
+import { OTLogDetailsPropTypes } from '../../../../../utils/customPropTypes';
+import AvatarNameEmail from '../../../../../Components/UI/AvatarNameEmail/AvatarNameEmail';
 
-class OneAbsenceRequestEmployee extends Component {
-
+class OneOTLog extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -24,7 +23,8 @@ class OneAbsenceRequestEmployee extends Component {
                         isLoading: false,
                         processorInfo: {
                             fullName: processor.fullName,
-                            email: processor.email
+                            email: processor.email,
+                            image: processor.image
                         }
                     })
                 })
@@ -38,16 +38,20 @@ class OneAbsenceRequestEmployee extends Component {
             ? <tr><td></td></tr>
             : <React.Fragment>
                 <tr>
-                    <td>{details.reason}</td>
-
-                    <td align="center">
-                        {timestampInSecsToDate(details.fromDate)} - {timestampInSecsToDate(details.toDate)}
+                    <td>{details.workSummary}</td>
+                    <td>
+                        <p>{timestampInSecsToDate(details.date)}</p>
+                        <p>{`${details.fromTime}h - ${details.toTime}h`}</p>                      
                     </td>
-                    <td align="center">{details.status}</td>
-                    <td >
+
+                    <td align="center" data-status={details.status}>
+                        {details.status}
+                    </td>
+                    <td>
                         {this.state.processorInfo &&
                             <AvatarNameEmail
                                 email={this.state.processorInfo.email}
+                                image={this.state.processorInfo.image}
                                 fullName={this.state.processorInfo.fullName}
                             />}
                     </td>
@@ -56,10 +60,11 @@ class OneAbsenceRequestEmployee extends Component {
             </React.Fragment>
             ;
     }
+
 }
 
-OneAbsenceRequestEmployee.propTypes = {
-    details: absenceRequestDetailsPropTypes
+OneOTLog.propTypes = {
+    details: OTLogDetailsPropTypes
 }
 
-export default OneAbsenceRequestEmployee;
+export default OneOTLog;

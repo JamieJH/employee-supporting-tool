@@ -15,7 +15,7 @@ class Headbar extends Component {
                     <img src={AppLogo} alt="app logo" />
                 </div>
                 <div className={styles.user}>
-                    <Avatar />
+                    <Avatar image={this.props.image} fullName={this.props.fullName} isCurrentUser='true'/>
                     <span className={styles.fullName}>{this.props.fullName}</span>
                 </div>
             </div>
@@ -25,7 +25,8 @@ class Headbar extends Component {
 
 const mapStateToProps = state => {
     return {
-        fullName: state.auth.fullName
+        fullName: state.auth.userDetails.fullName,
+        image: state.auth.userDetails.image
     }
 }
 

@@ -5,7 +5,6 @@ import AvatarNameEmail from '../../../../../Components/UI/AvatarNameEmail/Avatar
 import IconButton from '../../../../../Components/UI/IconButton/IconButton';
 import { timestampInSecsToDate } from '../../../../../utils/commonMethods';
 
-import styles from './OneUser.module.css'
 
 class OneEmployee extends Component {
     render() {
@@ -13,19 +12,22 @@ class OneEmployee extends Component {
 
         return (
             <tr>
-                <td className={styles.nameEmail}>
+                <td>
                     <AvatarNameEmail
                         image={this.props.details.image}
                         fullName={this.props.details.fullName}
                         email={this.props.details.email} />
                 </td>
-                <td className={styles.position}>
+                <td align="center">
+                    {details.role}
+                </td>
+                <td align="center">
                     {details.position}
                 </td>
-                <td className={styles.dateStarted}>
+                <td align="center" >
                     {timestampInSecsToDate(details.dateStarted)}
                 </td>
-                <td className={styles.actions}>
+                <td align="center" style={{whiteSpace: 'nowrap'}} >
                     <Link to={{
                         pathname: `/employee/${details.id}`,
                         // state: {

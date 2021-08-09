@@ -1,17 +1,10 @@
 
-.buttons {
-    margin: 20px 0;
-}
-
 .reason {
     text-align: left;
 }
 
-.status, .processor, .duration {
-    text-align: center;
-}
-
 .duration {
+    width: 20%;
     min-width: 100px;
 }
 
@@ -20,13 +13,16 @@
 }
 
 .status {
+    width: 15%;
     min-width: 100px;
 }
 
 .processor {
+    width: 20%;
     min-width: 200px;
 }
 
 .processorComment {
+    width: 25%;
     min-width: 200px;
 }

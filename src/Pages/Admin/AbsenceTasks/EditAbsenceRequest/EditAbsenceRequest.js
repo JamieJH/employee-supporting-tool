@@ -9,10 +9,11 @@ import 'firebase/database';
 import Spinner from '../../../../Components/UI/Spinner/Spinner';
 import Modal from '../../../../Components/UI/Modal/Modal';
 
-class AddAbsenceRequestAdmin extends Component {
+class EditAbsenceRequest extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoading: true,
             requestDetails: null,
             modal: null,
         }
@@ -22,9 +23,6 @@ class AddAbsenceRequestAdmin extends Component {
     }
 
     async componentDidMount() {
-        this.setState({
-            isLoading: true
-        })
         const requestId = this.props.match.params.requestId;
         let requestDetails;
         await firebase.database().ref('/absence-requests/' + requestId)
@@ -39,12 +37,10 @@ class AddAbsenceRequestAdmin extends Component {
             requestDetails.processorFullName = processor.fullName;
         }
 
-        console.log(requestDetails);
         const employee = await getUserAssociatedWithId(requestDetails.employeeId);
         requestDetails.employeeEmail = employee.email;
         requestDetails.id = requestId;
 
-        console.log(requestDetails);
 
         this.setState({
             isLoading: false,
@@ -56,15 +52,10 @@ class AddAbsenceRequestAdmin extends Component {
     }
 
     editAbsenceRequestHandler(requestDetails, requestId) {
-        this.setState({
-            isLoading: true
-        })
         const modalDetails = {
             type: 'warning',
-            title: 'Are you sure?',
             content: 'Press OK if you are sure all entered details are correct ',
             okButtonHandler: () => this.modalConfirmHandler(requestDetails, requestId),
-            cancelMessage: 'Cancel'
         }
 
         this.setModalState(modalDetails);
@@ -79,7 +70,6 @@ class AddAbsenceRequestAdmin extends Component {
             .then(() => {
                 return {
                     type: 'success',
-                    title: 'Success!',
                     content: 'The request has been succecssfully updated!',
                     okButtonHandler: () => window.location.reload()
                 };
@@ -87,7 +77,6 @@ class AddAbsenceRequestAdmin extends Component {
             .catch(() => {
                 return {
                     type: 'error',
-                    title: 'failed!',
                     content: 'Something went wrong, please try again later',
                 };
             })
@@ -131,8 +120,8 @@ class AddAbsenceRequestAdmin extends Component {
     }
 }
 
-AddAbsenceRequestAdmin.propTypes = {
+EditAbsenceRequest.propTypes = {
 
 }
 
-export default AddAbsenceRequestAdmin;
+export default EditAbsenceRequest;

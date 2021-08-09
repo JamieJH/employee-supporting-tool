@@ -13,11 +13,11 @@ const pages = {
         icon: "fa-money-check-alt",
     },{
         title: "Absence Requests",
-        link: "/absence-requests-employee",
+        link: "/absence-requests",
         icon: "fa-calendar-minus",
     },{
-        title: "Log OT",
-        link: "/log-ot",
+        title: "OT Logs",
+        link: "/ot-logs",
         icon: "fa-business-time",
     }],
     admin: [{
@@ -28,6 +28,10 @@ const pages = {
         title: "Absence Requests",
         link: "/absence-requests",
         icon: "fa-calendar-minus",
+    },{
+        title: "OT Logs",
+        link: "/ot-logs",
+        icon: "fa-business-time",
     }],
     superadmin: [{
         title: "Change Settings",
@@ -59,6 +63,8 @@ const AuthReducer = (state = initState, action) => {
         case actionTypes.LOGIN:
             const userData = action.payload.userData;
             const pages = getPages(userData.role);
+
+            console.log(userData.details);
 
             return updateState(state, {
                 isLoggedIn: true,

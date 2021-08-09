@@ -5,6 +5,7 @@ import { timestampMsToInputDate, dateStringToTimestampSecs } from '../../utils/c
 
 import styles from '../FormStyles.module.css';
 import { connect } from 'react-redux';
+import FileInput from '../FileInput/FileInput';
 
 
 class UserDetailsForm extends Component {
@@ -28,7 +29,6 @@ class UserDetailsForm extends Component {
         this.emailRef = React.createRef();
         this.passwordRef = React.createRef();
         this.dateStartedRef = React.createRef();
-        this.imageRef = React.createRef();
 
         this.enableEditing = this.enableEditing.bind(this);
         this.formSubmitHandler = this.formSubmitHandler.bind(this);
@@ -94,15 +94,24 @@ class UserDetailsForm extends Component {
     }
 
     onImageUploadedHandler(e) {
-        if (e.target.files && e.target.files[0]) {
-            const fileReader = new FileReader();
-            fileReader.onload = () => {
+        const files = e.target.files;
+        if (files && files[0]) {
+            if (files[0].size > 2 * 1024 * 1024) {
                 this.setState({
-                    uploadedImageFile: e.target.files[0],
-                    uploadedImageSource: fileReader.result
-                });
+                    imageError: 'Image too large'
+                })
             }
-            fileReader.readAsDataURL(e.target.files[0]);
+            else {
+                const fileReader = new FileReader();
+                fileReader.onload = () => {
+                    this.setState({
+                        imageError: '',
+                        uploadedImageFile: files[0],
+                        uploadedImageSource: fileReader.result
+                    });
+                }
+                fileReader.readAsDataURL(files[0]);
+            }
         }
     }
 
@@ -138,7 +147,6 @@ class UserDetailsForm extends Component {
 
     enableEditing(e) {
         e.preventDefault();
-        console.log("clicked");
         this.setState({
             isEditing: true
         })
@@ -159,8 +167,8 @@ class UserDetailsForm extends Component {
     render() {
         console.log(this.state);
         return (
-            <div className={styles.formContainer}>
-                <form onSubmit={this.formSubmitHandler} ref={this.formRef}>
+            <React.Fragment>
+                <form onSubmit={this.formSubmitHandler} className={styles.form} ref={this.formRef}>
                     <div className={styles.formInput}>
                         <label htmlFor="full-name">Full Name</label>
                         <input type="text" id="full-name"
@@ -244,26 +252,25 @@ class UserDetailsForm extends Component {
                         />
                     </div>
                     <div className={styles.formInput}>
-                        <label htmlFor="profile-image">Profile Image</label>
-                        <input type="file" id="profile-image"
-                            className={styles.fileInput}
-                            ref={this.imageRef}
-                            onChange={this.onImageUploadedHandler}
+                        <FileInput 
+                            accept="image/*"
+                            uploadTitle="Upload Image"
+                            uploadRules="JPG or PNG. Max size of 2MB"
+                            onImageUploadedHandler={this.onImageUploadedHandler}
                         />
-                        <div className={styles.imageUploader}>
-                            <span><i className="fas fa-upload"></i></span>
-                            <div>
-                                <p>Upload Image</p>
-                                <p>JPG or PNG. Max size of 1MB</p>
-                            </div>
-                        </div>
+                        {this.state.imageError && 
+                            <p className={styles.fieldError}>{this.state.imageError}</p>}
                         {this.getImageContainerToDisplay()}
                     </div>
 
-                    {this.getFunctionButton()}
+                    {this.props.children}
+
+                    <div className={styles.buttons}>
+                        {this.getFunctionButton()}
+                    </div>
 
                 </form>
-            </div>
+            </React.Fragment>
         );
     }
 }

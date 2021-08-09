@@ -21,7 +21,6 @@ class AddAbsenceRequestAdmin extends Component {
     }
 
     addAbsenceRequestHandler(requestDetails, email) {
-
         getUserAssociatedWithEmail(email)
             .then(employee => {
                 let modalDetails;
@@ -30,10 +29,8 @@ class AddAbsenceRequestAdmin extends Component {
                     requestDetails.employeeId = employee.id;
                     modalDetails = {
                         type: 'warning',
-                        title: 'Are you sure?',
                         content: 'Press OK if you are sure all entered details are correct ',
                         okButtonHandler: () => this.modalConfirmHandler(requestDetails),
-                        cancelMessage: 'Cancel'
                     }
                 }
                 else {
@@ -53,15 +50,12 @@ class AddAbsenceRequestAdmin extends Component {
             .then(() => {
                 return {
                     type: 'success',
-                    title: 'Success!',
                     content: 'The request has been succecssfully added!',
                 };
             })
             .catch(() => {
                 return {
                     type: 'error',
-                    title: 'failed!',
-                    content: 'Something went wrong, please try again later',
                 };
             })
             .then(modalDetails => {
@@ -100,8 +94,5 @@ class AddAbsenceRequestAdmin extends Component {
     }
 }
 
-AddAbsenceRequestAdmin.propTypes = {
-
-}
 
 export default AddAbsenceRequestAdmin;

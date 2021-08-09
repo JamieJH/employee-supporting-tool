@@ -1,27 +1,18 @@
 
-.buttons {
-    margin: 20px 0;
-}
-
 .name, .reason {
     text-align: left;
 }
 
-.status, .processor, .duration {
-    text-align: center;
-}
-
-
-.name {
+.name, .duration{
     min-width: 150px
 }
 
 .duration {
-    min-width: 100px;
+    width: 20%;
+    min-width: 130px;
 }
 
 .reason {
-    width: 15%;
     min-width: 300px;
 }
 
