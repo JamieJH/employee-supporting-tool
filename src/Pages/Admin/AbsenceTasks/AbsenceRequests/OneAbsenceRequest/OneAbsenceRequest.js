@@ -1,175 +1,134 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react';
+import { openModal, showSpinner } from '../../../../../redux/actions/actionCreators';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { absenceRequestDetailsPropTypes } from '../../../../../utils/customPropTypes'
-import { timestampInSecsToDate } from '../../../../../utils/commonMethods';
-import AvatarNameEmail from '../../../../../Components/UI/AvatarNameEmail/AvatarNameEmail';
-import IconButton from '../../../../../Components/UI/IconButton/IconButton';
-import { connect } from 'react-redux';
-import Modal from '../../../../../Components/UI/Modal/Modal';
-import firebase from 'firebase';
+import { inputDateToDateString } from '../../../../../utils/commonMethods';
+import { AvatarNameEmail, IconButton } from '../../../../../Components/index';
+import firebase from 'firebase/app';
 import 'firebase/database';
 
 
-class OneAbsenceRequest extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: true,
-            status: this.props.details.status,
-            modal: null,
-        }
+const OneAbsenceRequest = (props) => {
+	const [status, setStatus] = useState(props.details.status);
+	const [userDetails, setUserDetails] = useState(null);
+	const [processor, setProcessor] = useState(null);
+	const currentAdminId = useSelector(state => state.auth.userId);
+	const dispatch = useDispatch();
 
-        this.processRequestHandler = this.processRequestHandler.bind(this);
-        this.onClickProcessButtonHandler = this.onClickProcessButtonHandler.bind(this);
-    }
+	useEffect(() => {
+		const fetchData = async () => {
+			const database = firebase.database();
+			const promises = [];
+			promises.push(database.ref('/users/' + props.details.employeeId).once('value'));
 
-    componentDidMount() {
-        const database = firebase.database();
-        let userDetails = {};
-        let processor = '';
+			if (props.details.processorId) {
+				promises.push(database.ref('/users/' + props.details.processorId + '/fullName').once('value'));
+			}
 
-        database.ref('/users/' + this.props.details.employeeId)
-            .once('value')
-            .then(snapshot => {
-                return snapshot.val();
-            })
-            .then(user => {
-                userDetails = {
-                    fullName: user.fullName,
-                    email: user.email,
-                    image: user.image
-                }
-            })
-            .then(async () => {
-                if (this.props.details.processorId) {
-                    await database.ref('/users/' + this.props.details.processorId + '/fullName')
-                        .once('value')
-                        .then(snapshot => {
-                            return snapshot.val();
-                        })
-                        .then(name => {
-                            processor = name;
-                        })
-                }
-            })
-            .then(() => {
-                this.setState({
-                    isLoading: false,
-                    userDetails: userDetails,
-                    processor: processor,
-                })
-            })
-            .catch(err => {
-                throw (new Error("CANNOT GET USER DETAILS: ", err));
-            })
-    }
+			Promise.all(promises)
+				.then(snapshots => {
+					return snapshots.map(snapshot => {
+						return snapshot.val();
+					})
+				})
+				.then(([useDetails, processorName]) => {
+					setUserDetails({
+						fullName: useDetails.fullName,
+						email: useDetails.email,
+						image: useDetails.image
+					});
+					setProcessor(processorName);
+				})
+				.catch(() => {
+					dispatch(openModal({
+						type: 'error'
+					}))
+				})
+		}
+		fetchData();
+	}, [dispatch, props.details.employeeId, props.details.processorId])
 
-    processRequestHandler(action) {
-        this.setState({
-            isLoading: true
-        })
-        firebase.database().ref('/absence-requests/' + this.props.details.id)
-            .update({
-                processorId: this.props.adminId,
-                status: action
-            })
-            .then(() => {
-                this.setState({
-                    status: action,
-                    isLoading: false,
-                    modal: {
-                        key: Math.random(),
-                        type: "success",
-                        content: "This absent request has been successfully " + action,
-                    }
-                })
-            })
-            .catch(() => {
-                this.setState({
-                    isLoading: false,
-                    modal: {
-                        type: "error",
-                        content: "Something went wrong, please try again later!"
-                    }
-                })
-            })
-    }
+	const processRequestHandler = (action) => {
+		dispatch(showSpinner())
+		firebase.database().ref('/absence-requests/' + props.details.id)
+			.update({
+				processorId: currentAdminId,
+				status: action
+			})
+			.then(() => {
+				setStatus(action);
+				dispatch(openModal({
+					content: "Absent request has been successfully " + action,
+					type: 'success'
+				}))
+			})
+			.catch(() => {
+				dispatch(openModal({
+					type: 'error'
+				}))
+			})
+	}
 
-    onClickProcessButtonHandler(action) {
-        this.setState({
-            modal: {
-                key: Math.random(),
-                type: "warning",
-                content: "Are you sure you want to approve/deny this absence request?",
-                okButtonHandler: () => this.processRequestHandler(action),
-            }
-        })
-    }
+	const onClickProcessButtonHandler = (action) => {
+		dispatch(openModal({
+			type: "warning",
+			content: "Are you sure you want to approve/deny absence request?",
+			okButtonHandler: () => processRequestHandler(action),
+		}))
+	}
 
+	const details = props.details;
 
-    render() {
-        const details = this.props.details;
+	return !userDetails
+		? <tr><td></td></tr>
+		: <React.Fragment>
+			<tr>
+				<td>
+					<AvatarNameEmail
+						image={userDetails.image}
+						fullName={userDetails.fullName}
+						email={userDetails.email}
+					/>
+				</td>
+				<td align="center">
+					{inputDateToDateString(details.fromDate)} - {inputDateToDateString(details.toDate)}
+				</td>
+				<td>{details.reason}</td>
+				<td data-status={status}>{status}</td>
+				<td align="center">
+					{processor}
+				</td>
+				<td align="center" style={{ whiteSpace: "nowrap" }} >
+					<Link to={`/edit-request/${details.id}`}>
+						<IconButton fontAwesomeCode="fas fa-eye" type="info" title="edit details" />
+					</Link>
 
-        return this.state.isLoading
-            ? <tr><td></td></tr>
-            : <React.Fragment>
-                <tr>
-                    <td>
-                        <AvatarNameEmail
-                            image={this.state.userDetails.image}
-                            fullName={this.state.userDetails.fullName}
-                            email={this.state.userDetails.email}
-                        />
-                    </td>
-                    <td align="center">
-                        {timestampInSecsToDate(details.fromDate)} - {timestampInSecsToDate(details.toDate)}
-                    </td>
-                    <td>{details.reason}</td>
-                    <td data-status={this.state.status}>{this.state.status}</td>
-                    <td align="center">
-                        {this.state.processor}
-                    </td>
-                    <td align="center" style={{whiteSpace: "nowrap"}} >
-                        <Link to={`/edit-request/${details.id}`}>
-                            <IconButton fontAwesomeCode="fa-pen" type="info" title="edit details" />
-                        </Link>
-
-                        {this.state.status === 'pending' &&
-                            <React.Fragment>
-                                <IconButton
-                                    fontAwesomeCode="fa-check"
-                                    type="success"
-                                    title="approve request"
-                                    onClick={() => this.onClickProcessButtonHandler('approved')}
-                                />
-                                <IconButton
-                                    fontAwesomeCode="fa-times"
-                                    type="danger"
-                                    title="deny request"
-                                    onClick={() => this.onClickProcessButtonHandler('denied')}
-                                />
-                            </React.Fragment>
-                        }
-                    </td>
-                </tr>
-                {this.state.modal && <Modal key={this.state.modal.key} {...this.state.modal} />}
-            </React.Fragment>
-            ;
-    }
+					{status === 'pending' &&
+						<React.Fragment>
+							<IconButton
+								fontAwesomeCode="fas fa-check"
+								type="success"
+								title="approve request"
+								onClick={() => onClickProcessButtonHandler('approved')}
+							/>
+							<IconButton
+								fontAwesomeCode="fas fa-times"
+								type="danger"
+								title="deny request"
+								onClick={() => onClickProcessButtonHandler('denied')}
+							/>
+						</React.Fragment>
+					}
+				</td>
+			</tr>
+			{/* {modal && <Modal key={modal.key} {...modal} />} */}
+		</React.Fragment>
+		;
 }
 
 OneAbsenceRequest.propTypes = {
-    adminId: PropTypes.string.isRequired,
-    adminName: PropTypes.string.isRequired,
-    details: absenceRequestDetailsPropTypes.isRequired,
+	details: absenceRequestDetailsPropTypes.isRequired,
 }
 
-const mapStateToProps = (state) => {
-    return {
-        adminId: state.auth.userId,
-        adminName: state.auth.userDetails.fullName,
-    }
-}
-
-export default connect(mapStateToProps, null)(OneAbsenceRequest);
+export default OneAbsenceRequest;

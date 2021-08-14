@@ -1,98 +1,81 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { dateStringToTimestampSecs } from '../../../utils/commonMethods'
+import React from 'react';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import FunctionButton from '../../FunctionButton/FunctionButton';
 
 import styles from '../../FormStyles.module.css';
 
-class AbsenceFormEmployee extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            reason: '',
-            toDate: '',
-            fromDate: '',
-        }
+const AbsenceFormEmployee = (props) => {
 
-        this.formSubmitHandler = this.formSubmitHandler.bind(this);
-        this.reasonChangeHandler = this.reasonChangeHandler.bind(this);
-        this.toDateChangeHandler = this.toDateChangeHandler.bind(this);
-        this.fromDateChangeHandler = this.fromDateChangeHandler.bind(this);
-    }
+	const [formDetails, setFormDetails] = useState({
+		reason: '',
+		toDate: '',
+		fromDate: '',
+		pending: 'pending'
+	});
+
+	const employeeId = useSelector(state => state.auth.userId);
+	const todayDate = new Date().toISOString().split("T")[0];
 
 
-    formSubmitHandler(e) {
-        e.preventDefault();     
-        const requestDetails = {
-            employeeId: this.props.employeeId,
-            reason: this.state.reason,
-            toDate: dateStringToTimestampSecs(this.state.toDate),
-            fromDate: dateStringToTimestampSecs(this.state.fromDate),
-            status: 'pending'
-        }
-        this.props.onSubmitHandler(requestDetails)   
-    }
+	const formSubmitHandler = (e) => {
+		e.preventDefault();
+		const requestDetails = { ...formDetails };
+		requestDetails.employeeId = employeeId;
+		props.onSubmitHandler(requestDetails);
+	}
 
-    reasonChangeHandler(e) {
-        this.setState({
-            reason: e.target.value
-        })
-    }
+	const onInputChange = (e) => {
+		setFormDetails(prevDetails => {
+			return {
+				...prevDetails,
+				[e.target.name]: e.target.value
+			}
+		})
+	}
 
-    fromDateChangeHandler(e) {
-        this.setState({
-            fromDate: e.target.value
-        })
-    }
+	return (
+		<React.Fragment>
+			<form onSubmit={formSubmitHandler} className={styles.form} >
+				<div className={styles.formInput}>
+					<label htmlFor="reason">Reason</label>
+					<input type="text" id="reason" name="reason"
+						value={formDetails.reason}
+						placeholder="Example: high fever, got in accident and now in hospital,..."
+						onChange={onInputChange}
+						required
+					/>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="fromDate">From </label>
+					<input type="date" id="fromDate" name="fromDate"
+						value={formDetails.fromDate}
+						min={todayDate}
+						max={formDetails.toDate}
+						onChange={onInputChange}
+						required
+					/>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="toDate">To</label>
+					<input type="date" id="toDate" name="toDate"
+						value={formDetails.toDate}
+						min={formDetails.fromDate}
+						onChange={onInputChange}
+						required
+					/>
+				</div>
 
-    toDateChangeHandler(e) {
-        this.setState({
-            toDate: e.target.value
-        })
-    }
+				{/* <div className={styles.buttons}>
+					<button className={styles.saveButton}>Submit</button>
+				</div> */}
 
-    render() {
-        return (
-            <React.Fragment>
-                <form onSubmit={this.formSubmitHandler} ref={this.formRef}>
-                    <div className={styles.formInput}>
-                        <label htmlFor="reason">Reason</label>
-                        <input type="text" id="reason"
-                            value={this.state.reason}
-                            placeholder="Example: high fever, got in accident and now in hospital,..."
-                            onChange={this.reasonChangeHandler}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="fromDate">From </label>
-                        <input type="date" id="reason"
-                            value={this.state.fromDate}
-                            max={this.state.toDate}
-                            onChange={this.fromDateChangeHandler}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="toDate">To</label>
-                        <input type="date" id="reason"
-                            value={this.state.toDate}
-                            min={this.state.fromDate}
-                            onChange={this.toDateChangeHandler}
-                            required
-                        />
-                    </div>
+				<FunctionButton action='add' />
+			</form>
+		</React.Fragment>
+	);
 
-                    <button className={styles.saveButton}>Submit</button>
-                </form>
-            </React.Fragment>
-        );
-    }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        employeeId: state.auth.userId
-    }
-}
 
-export default connect(mapStateToProps, null)(AbsenceFormEmployee);
+export default AbsenceFormEmployee;

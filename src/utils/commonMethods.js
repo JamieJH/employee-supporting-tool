@@ -2,20 +2,12 @@ import firebase from "firebase/app";
 import "firebase/database";
 import "firebase/storage";
 
-export const timestampInSecsToDate = (timestamp) => {
-    return new Date(timestamp * 1000).toLocaleDateString("en-UK");  // format dd/mm/yyyy
-}
 
-export const dateStringToTimestampSecs = (dateString) => {
-    return new Date(dateString).getTime() / 1000;
+// input: yyyy-mm-dd
+// output: dd/mm/yyyy
+export const inputDateToDateString = (inputDate) => {
+    return new Date(inputDate).toLocaleDateString('en-uk');
 }
-
-export const timestampMsToInputDate = (timestamp) => {
-    const dateString = timestampInSecsToDate(timestamp);
-    const [day, month, year] = dateString.split("/");
-    return `${year}-${month}-${day}`;
-}
-
 
 export const getUserAssociatedWithEmail = (email) => {
     return firebase.database().ref('/users')
@@ -68,7 +60,7 @@ export const uploadMultipleFilesAndGetURLs = (files, filesNames) => {
                 return {
                     name: file.name,
                     url: url
-                };                
+                };
             })
             .catch(() => {
                 return null;

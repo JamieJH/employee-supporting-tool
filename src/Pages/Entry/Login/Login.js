@@ -1,168 +1,137 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { login } from '../../../redux/actions/authActions';
-import Spinner from '../../../Components/UI/Spinner/Spinner'
-import { connect } from 'react-redux';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { hideSpinner, showSpinner, login } from '../../../redux/actions/actionCreators';
+import { useDispatch } from 'react-redux';
 import Logo from '../../../assets/logo.png';
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/database';
 
 import styles from './Login.module.css';
 
-class Login extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: '',
-            password: '',
-            isLoading: false,
-            message: '',
-            isRememberMe: false,
-            loginErrorMessage: ''
-        }
-        this.logginHandler = this.logginHandler.bind(this)
-        this.emailOnChangeHandler = this.emailOnChangeHandler.bind(this)
-        this.passwordOnChangeHandler = this.passwordOnChangeHandler.bind(this)
-        // this.rememberMeOnChangeHandler = this.rememberMeOnChangeHandler.bind(this)
-    }
+const Login = () => {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [message, setMessage] = useState('');
 
-    async logginHandler(e) {
-        e.preventDefault();
-        this.setState({ isLoading: true });
-        const userIdEmail = {};
-        let isCorrectLogin = false;
-        await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-            .then(userCredentials => {
-                const user = userCredentials.user;
-                userIdEmail.id = user.uid;
-                userIdEmail.email = user.email;
-                isCorrectLogin = true;
-            })
-            .catch((error) => {
-                console.log(error.code);
-                if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
-                    this.setState({
-                        isLoading: false,
-                        loginErrorMessage: 'Incorrect Email or Password.'
-                    })
-                }
-                else {
-                    this.setState({
-                        isLoading: false,
-                        loginErrorMessage: 'Something went wrong, please try again later!'
-                    })
-                }
-            });
+	const dispatch = useDispatch();
+	const history = useHistory();
 
-        if (isCorrectLogin) {
-            const userDbRef = firebase.database().ref('/users/' + userIdEmail.id);
+	dispatch(hideSpinner());
 
-            userDbRef.once('value')
-                .then(snapshot => {
-                    return snapshot.val();
-                })
-                .then(user => {
-                    console.log(user);
-                    const role = user.role;
-                    delete user.role;
+	const logginHandler = async (e) => {
+		e.preventDefault();
+		const userIdEmail = {};
+		let isCorrectLogin = false;
+		
+		if (!email && !password) {
+			setMessage('Please enter email and password');
+			return
+		}
+		
+		dispatch(showSpinner());
+		await firebase.auth().signInWithEmailAndPassword(email, password)
+			.then(userCredentials => {
+				const user = userCredentials.user;
+				userIdEmail.id = user.uid;
+				userIdEmail.email = user.email;
+				isCorrectLogin = true;
+			})
+			.catch((error) => {
+				if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+					dispatch(hideSpinner());
+					setMessage('Incorrect Email or Password.');
+				}
+				else {
+					dispatch(hideSpinner());
+					setMessage('Something went wrong, please try again later!');
+				}
+			});
 
-                    user.email = userIdEmail.email;
+		if (isCorrectLogin) {
+			const userDbRef = firebase.database().ref('/users/' + userIdEmail.id);
 
-                    this.props.login({
-                        id: userIdEmail.id, 
-                        role: role,
-                        details: user
-                    });
-                    this.props.history.push('/');
-                });
-        }
+			userDbRef.once('value')
+				.then(snapshot => {
+					return snapshot.val();
+				})
+				.then(user => {
+					console.log(user);
+					const role = user.role;
+					delete user.role;
 
-    }
+					user.email = userIdEmail.email;
 
-    emailOnChangeHandler(e) {
-        this.setState({
-            email: e.target.value
-        })
-    }
+					dispatch(login({
+						id: userIdEmail.id,
+						role: role,
+						details: user
+					}))
+					dispatch(hideSpinner());
+					history.push('/')
+				});
+		}
 
-    passwordOnChangeHandler(e) {
-        this.setState({
-            password: e.target.value
-        })
-    }
+	}
 
-    rememberMeOnChangeHandler() {
-        this.setState(state => {
-            return {
-                isRememberMe: !state.isRememberMe
-            }
-        })
-    }
+	const emailOnChangeHandler = (e) => {
+		setEmail(e.target.value);
+	}
 
-    render() {
-        return (
-            <div className={styles.loginBackground}>
-                {!this.state.loginErrorMessage ? ''
-                    : <div className={styles.errorContainer}>
-                        <p>{this.state.loginErrorMessage}</p>
-                    </div>
-                }
-                <div className={styles.formContainer}>
-                    <div className={styles.logo}>
-                        <img src={Logo} alt="" />
-                    </div>
-                    <h2>Login</h2>
-                    <form className={styles.form}>
-                        <div className={styles.inputPair}>
-                            <input type="text" placeholder="Email" name="email"
-                                value={this.state.email}
-                                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                                title="Example: something@domain.com"
-                                onChange={this.emailOnChangeHandler}
-                                required
-                            />
-                            <span className={styles.inputIcon}>
-                                <i className="fas fa-envelope"></i>
-                            </span>
-                        </div>
-                        <div className={styles.inputPair}>
-                            <input type="password" placeholder="Password" name="password" id="login-pw"
-                                value={this.state.password}
-                                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                                title="Must contain: at least one number, one uppercase and lowercase letter, and at least 8 characters"
-                                onChange={this.passwordOnChangeHandler}
-                                required />
-                            <span className={styles.inputIcon}>
-                                <i className="fas fa-lock"></i>
-                            </span>
-                        </div>
-                        {/* <div className={`${styles.inputPair} ${styles.rememberMe}`}>
+	const passwordOnChangeHandler = (e) => {
+		setPassword(e.target.value);
+	}
+
+
+	return (
+		<div className={styles.loginBackground}>
+			{!message ? ''
+				: <div className={styles.errorContainer}>
+					<p>{message}</p>
+				</div>
+			}
+			<div className={styles.formContainer}>
+				<div className={styles.logo}>
+					<img src={Logo} alt="" />
+				</div>
+				<h2>Login</h2>
+				<form className={styles.form}>
+					<div className={styles.inputPair}>
+						<input type="text" placeholder="Email" name="email"
+							value={email}
+							pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+							title="Example: something@domain.com"
+							onChange={emailOnChangeHandler}
+							required
+						/>
+						<span className={styles.inputIcon}>
+							<i className="fas fa-envelope"></i>
+						</span>
+					</div>
+					<div className={styles.inputPair}>
+						<input type="password" placeholder="Password" name="password" id="login-pw"
+							value={password}
+							pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+							title="Must contain: at least one number, one uppercase and lowercase letter, and at least 8 characters"
+							onChange={passwordOnChangeHandler}
+							required />
+						<span className={styles.inputIcon}>
+							<i className="fas fa-lock"></i>
+						</span>
+					</div>
+					{/* <div className={`${styles.inputPair} ${styles.rememberMe}`}>
                             <input type="checkbox" name="remember" id="remember"
-                                value={this.state.isRememberMe}
-                                onChange={this.rememberMeOnChangeHandler} />
-                            <label htmlFor="remember" onClick={this.rememberMeOnChangeHandler}>Remember Me</label>
+                                value={state.isRememberMe}
+                                onChange={rememberMeOnChangeHandler} />
+                            <label htmlFor="remember" onClick={rememberMeOnChangeHandler}>Remember Me</label>
                         </div> */}
-                        <button className={styles.loginBtn} onClick={this.logginHandler}>Login</button>
-                    </form>
-                    {this.state.isLoading && <Spinner />}
-                </div>
-            </div>
+					<button className={styles.loginBtn} onClick={logginHandler}>Login</button>
+				</form>
+			</div>
+		</div>
+	);
 
-
-        );
-    }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        isLoggedIn: state.auth.isLoggedIn
-    }
-}
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        login: (userData) => dispatch(login(userData))
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Login));
+export default Login;

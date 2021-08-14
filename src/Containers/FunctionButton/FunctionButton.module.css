@@ -1,0 +1,25 @@
+
+.buttons {
+  width: 100%;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.saveButton, .editButton {
+  width: 130px;
+  font-size: 1.02rem;
+  padding: 10px 15px;
+  background-color: var(--color-success);
+  color: var(--text-white);
+  font-weight: 700;
+  transition: all .4s ease;
+}
+
+.editButton {
+  background-color: var(--color-info);
+}
+
+.saveButton:not(:disabled):hover, 
+.editButton:not(:disabled):hover {
+  background-color: var(--theme-dark-bg);
+}

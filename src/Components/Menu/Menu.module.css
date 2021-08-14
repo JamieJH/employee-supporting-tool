@@ -1,0 +1,77 @@
+.container {
+    width: var(--menu-bar-width);
+    height: 20px;
+    background: transparent;
+    border-color: transparent;
+    cursor: pointer;
+    display: block;
+    position: absolute;
+    top: calc(var(--headbar-height)/2);
+    left: calc(var(--headbar-padding-x) *  2);
+    transform: translate(-50%, -50%);
+    transition: var(--sidebar-transition);
+    z-index: var(--z-index-menu-toggler);
+}
+
+.bar {
+    width: 100%;
+    height: 3px;
+    display: block;
+    border-radius: 4px;
+    background-color: var(--headbar-text-color);
+    position: absolute;
+    transition: top .2s ease, transform .3s ease;
+    opacity: 1;
+}
+
+
+.barOne {
+    top: 0;
+}
+
+.barTwo {
+    top: 8px;
+    opacity: 1;
+    transition: all .2s ease;
+}
+
+.barThree {
+    top: 16px;
+}
+
+.container.open {
+    left: calc(var(--sidebar-width-open) - var(--headbar-padding-x) - var(--menu-bar-width));
+    position: fixed;
+}
+
+.container.open .barOne {
+    transform: rotate(45deg);
+    top: 10px;
+
+}
+
+.container.open .barTwo {
+    opacity: 0;
+}
+
+.container.open .barThree {
+    transform: rotate(-45deg);
+    top: 10px;
+}
+
+
+@media (min-width: 768px) {
+    .container {
+        position: relative;
+        float: left;
+        left: 0;
+        top: 50%;
+        transform: translate(0, -50%);
+    }
+
+    .container.open {
+        left: 0;
+        position: relative;
+    }
+
+}

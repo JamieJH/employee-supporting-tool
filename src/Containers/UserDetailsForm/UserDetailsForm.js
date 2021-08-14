@@ -1,292 +1,242 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { userDetailsPropTypes } from '../../utils/customPropTypes';
-import { timestampMsToInputDate, dateStringToTimestampSecs } from '../../utils/commonMethods';
-
-import styles from '../FormStyles.module.css';
-import { connect } from 'react-redux';
+import FunctionButton from '../FunctionButton/FunctionButton';
 import FileInput from '../FileInput/FileInput';
 
-
-class UserDetailsForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditing: false,
-            uploadedImageFile: '',
-            uploadedImageSource: '',
-        }
-
-        this.todayDate = new Date().toISOString().split("T")[0];
-        this.userDetailsForEditing = this.props.userDetails;
-
-        this.formRef = React.createRef();
-        this.fullNameRef = React.createRef();
-        this.dobRef = React.createRef();
-        this.genderRef = React.createRef();
-        this.roleRef = React.createRef();
-        this.positionRef = React.createRef();
-        this.emailRef = React.createRef();
-        this.passwordRef = React.createRef();
-        this.dateStartedRef = React.createRef();
-
-        this.enableEditing = this.enableEditing.bind(this);
-        this.formSubmitHandler = this.formSubmitHandler.bind(this);
-        this.getUserRoleOptions = this.getUserRoleOptions.bind(this);
-        this.onImageUploadedHandler = this.onImageUploadedHandler.bind(this);
-        this.getImageContainerToDisplay = this.getImageContainerToDisplay.bind(this);
-        this.toggleFormInputsDisabled = this.toggleFormInputsDisabled.bind(this);
-
-    }
-
-    componentDidMount() {
-        if (this.props.action === "edit") {
-            this.toggleFormInputsDisabled(true);
-        }
-    }
-
-    formSubmitHandler(e) {
-        e.preventDefault();
-        const userDetails = this.getInputsValues();
-
-        if (this.props.action === "add") {
-            const isPasswordValid = this.passwordValidator();
-            if (!isPasswordValid) {
-                const errorMessage = 'Password must contain at least 8 characters, including alphabetical letters and numbers.'
-                this.setModalState('error', 'Invalid Password', errorMessage);
-            }
-            else {
-                this.props.onSubmitHandler(userDetails, this.state.uploadedImageFile);
-            }
-        }
-        else {
-            this.props.onSubmitHandler(userDetails, this.state.uploadedImageFile);
-        }
-
-    }
+import styles from '../FormStyles.module.css';
+import classNames from 'classnames';
 
 
-    getInputsValues() {
-        return {
-            fullName: this.fullNameRef.current.value.toLowerCase(),
-            dob: dateStringToTimestampSecs(this.dobRef.current.value),
-            gender: this.genderRef.current.value,
-            role: this.roleRef.current.value,
-            position: this.positionRef.current.value.toLowerCase(),
-            email: this.emailRef.current.value.toLowerCase(),
-            password: this.passwordRef.current.value,
-            dateStarted: dateStringToTimestampSecs(this.dateStartedRef.current.value),
-        }
-    }
+const UserDetailsForm = (props) => {
+	const [imageError, setImageError] = useState(null);
+	const [passwordError, setPasswordError] = useState('');
+	const [uploadedImageFile, setUploadedImageFile] = useState(null);
+	const [uploadedImageSource, setUploadedImageSource] = useState(null);
+	const [formDetails, setFormDetails] = useState(props.userDetails || {
+		fullName: '',
+		dob: '',
+		gender: 'male',
+		role: 'employee',
+		email: '',
+		position: '',
+		employeeType: '',
+		dateStarted: '',
+		password: ''
+	});
+	const [isInputsDisabled, setIsInputDisabled] = useState(false);
+	const role = useSelector(state => state.auth.role);
+	const todayDate = new Date().toISOString().split("T")[0];
+
+	useEffect(() => {
+		if (props.action === "edit") {
+			setIsInputDisabled(true);
+		}
+	}, [props.action])
+
+	const onInputChange = (e) => {
+		setFormDetails(prevDetails => {
+			return {
+				...prevDetails,
+				[e.target.name]: e.target.value
+			}
+		})
+	}
+
+	const formSubmitHandler = (e) => {
+		e.preventDefault();
+		const regex = new RegExp(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/);
+		const isPasswordValid = regex.test(formDetails.password);
+
+		if (props.action === "add" && !isPasswordValid) {
+			setPasswordError('Password must contain at least 8 characters, including alphabetical letters and numbers.');
+		}
+		else {
+			props.onSubmitHandler(formDetails, uploadedImageFile);
+		}
+	}
+
+	const onImageUploadedHandler = (e) => {
+		const files = e.target.files;
+		if (files && files[0]) {
+			if (files[0].size > 2 * 1024 * 1024) {
+				setImageError('Image too large');
+			}
+			else {
+				const fileReader = new FileReader();
+				fileReader.onload = () => {
+					setImageError('');
+					setUploadedImageFile(files[0]);
+					setUploadedImageSource(fileReader.result)
+				}
+				fileReader.readAsDataURL(files[0]);
+			}
+		}
+	}
+
+	const getImageContainerToDisplay = () => {
+		let imageSource = '';
+		if (uploadedImageSource) {
+			imageSource = uploadedImageSource;
+		}
+		else if (props.userDetails && props.userDetails.image) {
+			imageSource = props.userDetails.image
+		}
+
+		return imageSource &&
+			<div className={styles.imageContainer}>
+				<img src={imageSource} alt="user uploaded profile" />
+			</div>
+	}
+
+	const getUserRoleOptions = () => {
+		if (role === "admin") {
+			return ["employee"];
+		}
+		else {
+			return ["employee", "admin", "superadmin"];
+		}
+	}
 
 
-    toggleFormInputsDisabled(isDisable) {
-        if (isDisable) {
-            this.formRef.current.querySelectorAll("input, select").forEach(input => {
-                input.setAttribute("disabled", true);
-            })
-        }
-        else {
-            this.formRef.current.querySelectorAll("input:not(#email, #password), select").forEach(input => {
-                input.removeAttribute("disabled");
-            })
-        }
-    }
+	return (
+		<React.Fragment>
+			<form onSubmit={formSubmitHandler} className={styles.form}>
+				<div className={styles.formInput}>
+					<label htmlFor="full-name">Full Name</label>
+					<input type="text" id="full-name" name='fullName'
+						value={formDetails.fullName}
+						placeholder="Example: Tran Van A, James Dean, ..."
+						pattern="^([a-zA-Z]+[ ]?)+$"
+						title="First name and last name only. Contains alphabet letters, a hyphen and apostrophe"
+						onChange={onInputChange}
+						disabled={isInputsDisabled}
+						required
+					/>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="dob">Date of Birth</label>
+					<input type="date" id="dob" name="dob"
+						value={formDetails.dob}
+						onChange={onInputChange}
+						disabled={isInputsDisabled}
+						max={todayDate}
+						required
+					/>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="gender">Gender</label>
+					<select required id="gender" name="gender"
+						value={formDetails.gender}
+						onChange={onInputChange}
+						disabled={isInputsDisabled}
+					>
+						<option value="male">Male</option>
+						<option value="female">Female</option>
+						<option value="other">Other</option>
+					</select>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="employee-type">Employee Type</label>
+					<select required id="employee-type" name="employeeType"
+						value={formDetails.employeeType}
+						onChange={onInputChange}
+						disabled={isInputsDisabled}
+					>
+						{['fresher', 'probation', 'official'].map(option => {
+							return <option key={option} value={option}>{option}</option>
+						})}
+					</select>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="user-role">User Role</label>
+					<select required id="user-role" name="role"
+						value={formDetails.role}
+						onChange={onInputChange}
+						disabled={isInputsDisabled}
+					>
+						{getUserRoleOptions().map(option => {
+							return <option key={option} value={option}>{option}</option>
+						})}
+					</select>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="position">Position</label>
+					<input type="text" id="position" name="position"
+						value={formDetails.position}
+						onChange={onInputChange}
+						disabled={isInputsDisabled}
+						placeholder="Example: Undercover Agent, Field Agent,..."
+						required
+					/>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="email">Email</label>
+					<input type="text" id="email" name='email'
+						value={formDetails.email}
+						onChange={onInputChange}
+						disabled={props.action === 'edit'}
+						placeholder="lastname.firstname@company.com"
+						title="Must be in format emailadress@domain.abc"
+						pattern="^[a-z0-9.]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+						required
+					/>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="password">Password</label>
+					<input type="text" id="password" name="password"
+						value={formDetails.password}
+						onChange={onInputChange}
+						disabled={props.action === 'edit'}
+						placeholder="Make sure you enter the right password before saving."
+						title="Contain at least 8 characters, including alphabetic characters and numbers."
+					/>
+					<p className={styles.inputFootnote}>
+						At least 8 characters, only alphabetic characters and numbers.
+					</p>
+					<p className={styles.fieldError}>{passwordError}</p>
+				</div>
+				<div className={styles.formInput}>
+					<label htmlFor="date-started">Date Started</label>
+					<input type="date" id="date-started" name="dateStarted"
+						value={formDetails.dateStarted}
+						disabled={isInputsDisabled}
+						onChange={onInputChange}
+						max={todayDate}
+						required
+					/>
+				</div>
+				<div className={classNames(styles.formInput, styles.formFileInput)}>
+					<FileInput
+						accept="image/*"
+						uploadTitle="Upload Image"
+						uploadRules="JPG or PNG. Max size of 2MB"
+						onFileUploadHandler={onImageUploadedHandler}
+					/>
+					{imageError &&
+						<p className={styles.fieldError}>{imageError}</p>}
+					{getImageContainerToDisplay()}
+				</div>
 
-    onImageUploadedHandler(e) {
-        const files = e.target.files;
-        if (files && files[0]) {
-            if (files[0].size > 2 * 1024 * 1024) {
-                this.setState({
-                    imageError: 'Image too large'
-                })
-            }
-            else {
-                const fileReader = new FileReader();
-                fileReader.onload = () => {
-                    this.setState({
-                        imageError: '',
-                        uploadedImageFile: files[0],
-                        uploadedImageSource: fileReader.result
-                    });
-                }
-                fileReader.readAsDataURL(files[0]);
-            }
-        }
-    }
+				{props.children}
 
-    getImageContainerToDisplay() {
-        let imageSource = '';
-        if (this.state.uploadedImageSource) {
-            imageSource = this.state.uploadedImageSource;
-        }
-        else if (this.props.userDetails && this.props.userDetails.image) {
-            imageSource = this.props.userDetails.image
-        }
+				<FunctionButton
+					action={props.action}
+					isInputsDisabled={isInputsDisabled}
+					enabledInputs={() => setIsInputDisabled(false)} />
 
-        return imageSource &&
-            <div className={styles.imageContainer}>
-                <img src={imageSource} alt="user uploaded profile" />
-            </div>
-    }
+			</form>
+		</React.Fragment>
+	);
 
-    getUserRoleOptions() {
-        if (this.props.role === "admin") {
-            return ["employee"];
-        }
-        else {
-            return ["employee", "admin", "superadmin"];
-        }
-    }
-
-    passwordValidator() {
-        const enteredPassword = this.passwordRef.current.value;
-        const regex = new RegExp(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/);
-        return regex.test(enteredPassword);
-    }
-
-    enableEditing(e) {
-        e.preventDefault();
-        this.setState({
-            isEditing: true
-        })
-        this.toggleFormInputsDisabled(false);
-    }
-
-    getFunctionButton() {
-        if (this.props.action === 'add' || this.state.isEditing) {
-            return <button type="submit" className={styles.saveButton}>Save</button>
-        }
-        else {
-            return <button type="button" onClick={this.enableEditing} className={styles.editButton}>Edit</button>
-        }
-    }
-
-
-
-    render() {
-        console.log(this.state);
-        return (
-            <React.Fragment>
-                <form onSubmit={this.formSubmitHandler} className={styles.form} ref={this.formRef}>
-                    <div className={styles.formInput}>
-                        <label htmlFor="full-name">Full Name</label>
-                        <input type="text" id="full-name"
-                            defaultValue={this.userDetailsForEditing ? this.userDetailsForEditing.fullName : ''}
-                            placeholder="Example: John Smith, Jane Black-Smith, Dylan O'Brien"
-                            pattern="^([a-zA-Z]+)\s([a-zA-Z]+)((-|')([a-zA-Z]+))*$"
-                            title="First name and last name only. Contains alphabet letters, a hyphen and apostrophe"
-                            ref={this.fullNameRef}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="dob">Date of Birth</label>
-                        <input type="date" id="dob"
-                            defaultValue={this.userDetailsForEditing ? timestampMsToInputDate(this.userDetailsForEditing.dob) : ''}
-                            max={this.todayDate}
-                            placeholder="dd/mm/yyyy"
-                            ref={this.dobRef}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="gender">Gender</label>
-                        <select required ref={this.genderRef} id="gender"
-                            defaultValue={this.userDetailsForEditing ? this.userDetailsForEditing.gender : ''}
-                        >
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="user-role">User Role</label>
-                        <select required ref={this.roleRef} id="user-role"
-                            defaultValue={this.userDetailsForEditing ? this.userDetailsForEditing.role : ''}
-                        >
-                            {this.getUserRoleOptions().map(option => {
-                                return <option key={option} value={option}>{option}</option>
-                            })}
-                        </select>
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="position">Position</label>
-                        <input type="text" id="position"
-                            defaultValue={this.userDetailsForEditing ? this.userDetailsForEditing.position : ''}
-                            placeholder="Example: Undercover Agent, Field Agent,..."
-                            ref={this.positionRef}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="email">Email</label>
-                        <input type="text" id="email"
-                            defaultValue={this.userDetailsForEditing ? this.userDetailsForEditing.email : ''}
-                            placeholder="lastname.firstname@company.com"
-                            title="Must be in format emailadress@domain.abc"
-                            pattern="^[a-z0-9.]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                            ref={this.emailRef}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="password">Password</label>
-                        <input type="text" id="password"
-                            placeholder="Make sure you enter the right password before saving."
-                            title="Contain at least 8 characters, including alphabetic characters and numbers."
-                            ref={this.passwordRef}
-                        />
-                        <p className={styles.inputFootnote}>
-                            At least 8 characters, only alphabetic characters and numbers.
-                        </p>
-                    </div>
-                    <div className={styles.formInput}>
-                        <label htmlFor="date-started">Date Started</label>
-                        <input type="date" id="date-started"
-                            defaultValue={this.userDetailsForEditing ? timestampMsToInputDate(this.userDetailsForEditing.dateStarted) : ''}
-                            max={this.todayDate}
-                            placeholder="dd/mm/yyyy"
-                            ref={this.dateStartedRef}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formInput}>
-                        <FileInput 
-                            accept="image/*"
-                            uploadTitle="Upload Image"
-                            uploadRules="JPG or PNG. Max size of 2MB"
-                            onImageUploadedHandler={this.onImageUploadedHandler}
-                        />
-                        {this.state.imageError && 
-                            <p className={styles.fieldError}>{this.state.imageError}</p>}
-                        {this.getImageContainerToDisplay()}
-                    </div>
-
-                    {this.props.children}
-
-                    <div className={styles.buttons}>
-                        {this.getFunctionButton()}
-                    </div>
-
-                </form>
-            </React.Fragment>
-        );
-    }
 }
 
 
 UserDetailsForm.propTypes = {
-    action: PropTypes.string.isRequired,
-    role: PropTypes.oneOf(["admin", "superadmin"]).isRequired,
-    userDetails: userDetailsPropTypes
+	action: PropTypes.string.isRequired,
+	userDetails: userDetailsPropTypes
 }
 
 
-const mapStateToProp = (state) => {
-    return {
-        role: state.auth.role
-    }
-}
-
-export default connect(mapStateToProp, null)(UserDetailsForm);
+export default UserDetailsForm;

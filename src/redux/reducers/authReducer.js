@@ -11,11 +11,11 @@ const pages = {
         title: "salary",
         link: "/salary",
         icon: "fa-money-check-alt",
-    },{
+    }, {
         title: "Absence Requests",
         link: "/absence-requests",
         icon: "fa-calendar-minus",
-    },{
+    }, {
         title: "OT Logs",
         link: "/ot-logs",
         icon: "fa-business-time",
@@ -24,11 +24,11 @@ const pages = {
         title: "All Employees",
         link: "/employees",
         icon: "fa-users",
-    },{
+    }, {
         title: "Absence Requests",
         link: "/absence-requests",
         icon: "fa-calendar-minus",
-    },{
+    }, {
         title: "OT Logs",
         link: "/ot-logs",
         icon: "fa-business-time",
