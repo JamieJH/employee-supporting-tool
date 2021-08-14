@@ -1,107 +1,71 @@
-import React, { Component } from 'react';
+import React from 'react';
 import uuid from 'uuid-random';
-import { connect } from 'react-redux';
+import { openModal, showSpinner } from '../../../../redux/actions/actionCreators';
+import { useDispatch, useSelector } from 'react-redux';
 import OTFormAdmin from '../../../../Containers/OTForm/OTFormAdmin';
-import { uploadFilesToHost, saveOTLogDetails } from '../../../../Containers/OTForm/OTForm';
+import { uploadFilesToHost } from '../../../../Containers/OTForm/OTForm';
 import { getUserAssociatedWithEmail } from '../../../../utils/commonMethods';
-import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
-import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
-import Spinner from '../../../../Components/UI/Spinner/Spinner';
-import Modal from '../../../../Components/UI/Modal/Modal';
+import * as PageCompos from '../../../../Components/pageComponents';
+import { useLogOT } from '../../../../utils/customHooks';
 
-class LogOTEmployee extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: false,
-            modalDetails: null
-        }
+const LogOTEmployee = () => {
+	const processorId = useSelector(state => state.auth.userId);
+	const processorEmail = useSelector(state => state.auth.userDetails.email);
+	const dispatch = useDispatch();
+	const logOTHandler = useLogOT();
 
-        this.onSubmitHandler = this.onSubmitHandler.bind(this);
-        this.initialValues = {
-            status: 'pending',
-            processorEmail: this.props.processorEmail
-        }
-    }
+	const initialValues = {
+		status: 'pending',
+		processorEmail: processorEmail
+	}
 
+	const onSubmitHandler = async (logDetails, employeeEmail, files) => {
+		dispatch(showSpinner());
 
-    async onSubmitHandler(logDetails, files) {
-        this.setState({
-            isLoading: true
-        })
+		const otLogId = uuid();
+		const employee = await getUserAssociatedWithEmail(employeeEmail);
 
-        const otLogId = uuid();
-        const employee = await getUserAssociatedWithEmail(logDetails.employeeEmail);
-        
-        if (!employee) {
-            this.setState({
-                isLoading: false,
-                modalDetails: {
-                    key: Math.random(),
-                    type: 'error',
-                    title: 'User not found',
-                    content: "There's no user associated with their email"
-                }
-            })
-            return;
-        }
+		if (!employee) {
+			dispatch(openModal({
+				content: "There's no user associated with this email"
+			}));
+			return;
+		}
 
-        delete logDetails.employeeEmail;
-        delete logDetails.processor;
-        logDetails.employeeId = employee.id;
-        logDetails.processorId = this.props.processorId;
+		delete logDetails.employeeEmail;
+		delete logDetails.processor;
+		logDetails.employeeId = employee.id;
+		logDetails.processorId = processorId;
 
 
-        if (files) {
-            const uploadResults = await uploadFilesToHost(otLogId, files);
+		if (files) {
+			const uploadResults = await uploadFilesToHost(otLogId, files);
 
-            if (uploadResults.isSuccessful) {
-                logDetails.files = uploadResults.files;
-            }
-            else {
-                this.setState({
-                    isLoading: false,
-                    modalDetails: uploadResults.modalDetails
-                })
-                return;
-            }
-        }
+			if (!uploadResults.isSuccessful) {
+				dispatch(openModal({ ...uploadResults.modalDetails }));
+				return;
+			}
+			logDetails.files = uploadResults.files;
+		}
 
-        const saveDetailsResults = await saveOTLogDetails(otLogId, logDetails);
+		// save new log details 
+		logOTHandler(otLogId, logDetails);
+	}
 
-        this.setState({
-            isLoading: false,
-            modalDetails: saveDetailsResults.modalDetails
-        })
 
-    }
+	return (
+		<PageCompos.MainContentLayout
+			title="Log OT"
+			description="Log OT work for an employee.">
+			<OTFormAdmin
+				action="add"
+				initialValues={initialValues}
+				onSubmitHandler={onSubmitHandler} />
 
-    render() {
-        return (
-            <React.Fragment >
-                <PageHeader
-                    title="Log OT"
-                    description="Log OT work for an employee." />
+		</PageCompos.MainContentLayout>
 
-                <PageMainContainer>
-                    <OTFormAdmin
-                        action="add"
-                        initialValues={this.initialValues}
-                        onSubmitHandler={this.onSubmitHandler} />
-                </PageMainContainer>
+	);
 
-                {this.state.isLoading && <Spinner />}
-                {this.state.modalDetails && <Modal {...this.state.modalDetails} />}
-            </React.Fragment>
-        );
-    }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        processorId: state.auth.userId,
-        processorEmail: state.auth.userDetails.email
-    }
-}
-
-export default connect(mapStateToProps, null)(LogOTEmployee);
+export default LogOTEmployee;

@@ -1,0 +1,40 @@
+:root {
+    --spinner-thick: 5px;
+}
+
+.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 200;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: var(--spinner-thick) solid var(--color-spinner);
+    border-bottom: var(--spinner-thick) solid transparent;
+    border-top: var(--spinner-thick) solid transparent;
+    border-radius: 50%;
+    animation:  spin 1.2s linear infinite;
+}
+
+.spinnerTwo {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    animation: spin-reverse 2s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(-360deg);
+    }
+}
+
+@keyframes spin-reverse {
+    100% {
+        transform: rotate(360deg)
+    }
+}

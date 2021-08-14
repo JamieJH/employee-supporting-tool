@@ -1,65 +1,58 @@
-import React, { Component } from 'react';
-import AvatarNameEmail from '../../../../../Components/UI/AvatarNameEmail/AvatarNameEmail';
-import { timestampInSecsToDate, getUserAssociatedWithId } from '../../../../../utils/commonMethods';
+import React from 'react';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { AvatarNameEmail } from '../../../../../Components/index';
+import { inputDateToDateString, getUserAssociatedWithId } from '../../../../../utils/commonMethods';
 import { absenceRequestDetailsPropTypes } from '../../../../../utils/customPropTypes';
 
-class OneAbsenceRequestEmployee extends Component {
+const OneAbsenceRequestEmployee = (props) => {
+	const [isLoading, setIsLoading] = useState(true);
+	const [processorInfo, setProcessorInfo] = useState(null);
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: false,
-            processorInfo: null
-        }
-    }
+	useEffect(() => {
+		if (props.details.processorId) {
+			getUserAssociatedWithId(props.details.processorId)
+				.then(processor => {
+					setProcessorInfo({
+						fullName: processor.fullName,
+						email: processor.email,
+						image: processor.image
+					})
+				})
+		}
+		setIsLoading(false);
+	}, [props.details.processorId])
 
-    componentDidMount() {
-        if (this.props.details.processorId) {
-            this.setState({
-                isLoading: true
-            })
-            getUserAssociatedWithId(this.props.details.processorId)
-                .then(processor => {
-                    this.setState({
-                        isLoading: false,
-                        processorInfo: {
-                            fullName: processor.fullName,
-                            email: processor.email
-                        }
-                    })
-                })
-        }
-    }
+	const details = props.details;
 
-    render() {
-        const details = this.props.details;
+	return isLoading
+		? <tr><td></td></tr>
+		: <React.Fragment>
+			<tr>
+				<td>{details.reason}</td>
+				<td align="center">
+					{inputDateToDateString(details.fromDate)} - {inputDateToDateString(details.toDate)}
+				</td>
+				<td align="center" data-status={details.status}>
+					{details.status}
+				</td>
+				<td >
+					{processorInfo &&
+						<AvatarNameEmail
+							image={processorInfo.image}
+							email={processorInfo.email}
+							fullName={processorInfo.fullName}
+						/>}
+				</td>
+				<td>{details.processorComment}</td>
+			</tr>
+		</React.Fragment>
+		;
 
-        return this.state.isLoading
-            ? <tr><td></td></tr>
-            : <React.Fragment>
-                <tr>
-                    <td>{details.reason}</td>
-
-                    <td align="center">
-                        {timestampInSecsToDate(details.fromDate)} - {timestampInSecsToDate(details.toDate)}
-                    </td>
-                    <td align="center">{details.status}</td>
-                    <td >
-                        {this.state.processorInfo &&
-                            <AvatarNameEmail
-                                email={this.state.processorInfo.email}
-                                fullName={this.state.processorInfo.fullName}
-                            />}
-                    </td>
-                    <td>{details.processorComment}</td>
-                </tr>
-            </React.Fragment>
-            ;
-    }
 }
 
 OneAbsenceRequestEmployee.propTypes = {
-    details: absenceRequestDetailsPropTypes
+	details: absenceRequestDetailsPropTypes
 }
 
 export default OneAbsenceRequestEmployee;

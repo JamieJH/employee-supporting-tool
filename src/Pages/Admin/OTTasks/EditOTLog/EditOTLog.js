@@ -1,123 +1,114 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import { hideSpinner, openModal, showSpinner } from '../../../../redux/actions/actionCreators';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import * as PageCompos from '../../../../Components/pageComponents';
+import { getUserAssociatedWithId } from '../../../../utils/commonMethods';
 import OTFormAdmin from '../../../../Containers/OTForm/OTFormAdmin';
-import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
-import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
-import Spinner from '../../../../Components/UI/Spinner/Spinner';
-import Modal from '../../../../Components/UI/Modal/Modal';
-import { getUserAssociatedWithId, timestampMsToInputDate } from '../../../../utils/commonMethods';
-
 import firebase from 'firebase/app';
 import 'firebase/database';
 
 
-class EditOTLog extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: true,
-            logDetails: null,
-            modalDetails: null
-        }
+const EditOTLog = (props) => {
+	const [logDetails, setLogDetails] = useState(null);
+	const dispatch = useDispatch();
+	const history = useHistory();
 
-        this.onSubmitHandler = this.onSubmitHandler.bind(this);
-    }
+	useEffect(() => {
+		async function fetchData() {
+			const logId = props.match.params.logId;
+
+			const logDetails = await firebase.database().ref('/ot-logs/' + logId)
+				.once('value')
+				.then(snapshot => {
+					return snapshot.val();
+				})
+				.catch(err => {
+					console.log(err);
+				})
+
+			if (!logDetails) {
+				dispatch(openModal({
+					type: 'error',
+					content: 'Cannot get OT logs details, please try again later!'
+				}))
+				return;
+			}
+
+			const employee = await getUserAssociatedWithId(logDetails.employeeId);
+			if (!employee) {
+				dispatch(openModal({
+					type: 'error',
+					content: 'Cannot get employee details, please try again later!'
+				}))
+				return;
+			}
+			logDetails.employeeEmail = employee.email;
+
+			if (logDetails.processorId) {
+				const processor = await getUserAssociatedWithId(logDetails.processorId);
+				if (!processor) {
+					dispatch(openModal({
+						type: 'error',
+						content: 'Cannot get processor details, please try again later!'
+					}))
+					return
+				}
+				logDetails.processorEmail = processor.email;
+			}
+
+			logDetails.id = logId;
+			setLogDetails(logDetails);
+			dispatch(hideSpinner(false));
+		}
+
+		dispatch(showSpinner());
+		fetchData();
+
+	}, [dispatch, props.match.params.logId])
 
 
-    async componentDidMount() {
-        let logDetails;
-        const logId = this.props.match.params.logId;
+	const getFormInitialValues = () => {
+		if (logDetails) {
+			const editDetails = { ...logDetails };
+			delete editDetails.processorId;
+			delete editDetails.employeeId;
+			delete editDetails.id;
 
-        await firebase.database().ref('/ot-logs/' + logId)
-            .once('value')
-            .then(snapshot => {
-                logDetails = snapshot.val();
-            })
+			return editDetails;
+		}
+	}
 
-        logDetails.id = logId;
+	const onSubmitHandler = (newLogDetails) => {
+		dispatch(showSpinner());
 
-        const employee = await getUserAssociatedWithId(logDetails.employeeId);
-        logDetails.employeeEmail = employee.email;
+		firebase.database().ref('/ot-logs').child(logDetails.id).update(newLogDetails)
+			.then(() => {
+				dispatch(openModal({
+					type: 'success',
+					content: 'The log has been successfully updated!',
+					okButtonHandler: () => history.push('/ot-logs')
+				}))
+			})
+			.catch(() => {
+				dispatch(openModal({
+					content: 'Could not update this log, please try again later!'
+				}))
+			})
+	}
 
-        if (logDetails.processorId) {
-            const processor = await getUserAssociatedWithId(logDetails.processorId);
-            logDetails.processorEmail = processor.email;
-        }
+	return logDetails &&
+		<PageCompos.MainContentLayout
+			title="Edit OT Log"
+			description="Make changes to submitted OT logs">
+			<OTFormAdmin
+				action="edit"
+				initialValues={getFormInitialValues()}
+				onSubmitHandler={onSubmitHandler}
+			/>
 
-
-        this.setState({
-            isLoading: false,
-            logDetails: {
-                id: logId,
-                ...logDetails
-            }
-        })
-    }
-
-    getFormInitialValues() {
-        if (this.state.logDetails) {
-            const editDetails = { ...this.state.logDetails };
-            editDetails.date = timestampMsToInputDate(editDetails.date);
-            delete editDetails.processorId;
-            delete editDetails.employeeId;
-            delete editDetails.id;
-
-            return editDetails;
-        }
-    }
-
-    onSubmitHandler(newLogDetails) {
-        this.setState({
-            isLoading: true
-        })
-
-        const logId = this.state.logDetails.id;
-
-        firebase.database().ref('/ot-logs').child(logId).update(newLogDetails)
-            .then(() => {
-                this.setState({
-                    isLoading: false,
-                    modalDetails: {
-                        key: Math.random(),
-                        type: 'success',
-                        content: 'The log has been successfully updated!',
-                        okButtonHandler: () => window.location.reload()
-                    }
-                })
-            })
-            .catch(() => {
-                this.setState({
-                    isLoading: false,
-                    modalDetails: {
-                        key: Math.random(),
-                        type: 'error',
-                        content: 'Something went'
-                    }
-                })
-            })
-    }
-
-    render() {
-        return this.state.isLoading
-            ? <Spinner />
-            : <React.Fragment>
-                <PageHeader
-                    title="Edit OT Log"
-                    description="Make changes to submitted OT logs" />
-
-                <PageMainContainer>
-                    <OTFormAdmin
-                        action="edit"
-                        initialValues={this.getFormInitialValues()}
-                        onSubmitHandler={this.onSubmitHandler}
-                    />
-                </PageMainContainer>
-
-                {this.state.modalDetails && <Modal {...this.state.modalDetails} />}
-                {this.state.isLoading && <Spinner />}
-
-            </React.Fragment>
-            ;
-    }
+		</PageCompos.MainContentLayout>
+		;
 }
 
 export default EditOTLog;

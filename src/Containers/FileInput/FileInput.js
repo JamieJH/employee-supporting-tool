@@ -1,28 +1,27 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import styles from './FileInput.module.css';
 
-class FileInput extends Component {
-    render() {
-        return (
-            <React.Fragment>
-                <label htmlFor="files">Profile Image</label>
-                <input type="file" id="files"
-                    className={styles.fileInput}
-                    ref={this.imageRef}
-                    onChange={this.props.onImageUploadedHandler}
-                    accept={this.props.accept}
-                />
-                <div className={styles.fileInputUploader}>
-                    <span><i className="fas fa-upload"></i></span>
-                    <div>
-                        <p>{this.props.uploadTitle}</p>
-                        <p>{this.props.uploadRules}</p>
-                    </div>
+const FileInput = (props) => {
+    return (
+        <React.Fragment>
+            <label htmlFor="files">{props.label}</label>
+            <input type="file" id="files"
+                className={styles.fileInput}
+                onChange={props.onFileUploadHandler}
+                accept={props.accept}
+                multiple={props.multiple}
+            />
+            <div className={styles.fileInputUploader}>
+                <span><i className="fas fa-upload"></i></span>
+                <div>
+                    <p>{props.uploadTitle}</p>
+                    <p>{props.uploadRules}</p>
                 </div>
-            </React.Fragment>
-        );
-    }
+            </div>
+        </React.Fragment>
+    );
+
 }
 
 export default FileInput;

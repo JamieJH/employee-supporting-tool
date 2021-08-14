@@ -2,15 +2,10 @@ import PropTypes from 'prop-types';
 
 
 export const userDetailsPropTypes = PropTypes.exact({
-    dateStarted: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ]).isRequired,
-    dob: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ]).isRequired,
+    dateStarted: PropTypes.string.isRequired,
+    dob: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
+    employeeType: PropTypes.oneOf(["fresher", "probation", "official"]),
     fullName: PropTypes.string.isRequired,
     gender: PropTypes.oneOf(['female', 'male', 'other']).isRequired,
     id: PropTypes.string.isRequired,
@@ -22,17 +17,11 @@ export const userDetailsPropTypes = PropTypes.exact({
 export const absenceRequestDetailsPropTypes = PropTypes.exact({
     processorId: PropTypes.string,
     employeeId: PropTypes.string.isRequired,
-    fromDate: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ]).isRequired,
+    fromDate: PropTypes.string.isRequired,
     id: PropTypes.string,
     reason: PropTypes.string.isRequired,
     status: PropTypes.oneOf(["approved", "pending", "denied"]).isRequired,
-    toDate: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ]).isRequired,
+    toDate: PropTypes.string.isRequired,
     processorComment: PropTypes.string
 })
 
@@ -40,10 +29,7 @@ export const OTLogDetailsPropTypes = PropTypes.exact({
     id: PropTypes.string,
     processorId: PropTypes.string,
     employeeId: PropTypes.string.isRequired,
-    date: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ]).isRequired,
+    date: PropTypes.string.isRequired,
     fromTime: PropTypes.string.isRequired,
     toTime: PropTypes.string.isRequired,
     status: PropTypes.oneOf(["approved", "pending", "denied"]).isRequired,

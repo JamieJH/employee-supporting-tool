@@ -1,17 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import styles from './CustomTable.module.css';
 
-class CustomTable extends Component {
-    render() {
-        return (
-            <div className={styles.container}>
-                <table className={styles.table}>
-                    {this.props.children}
-                </table>
-            </div>
-        );
-    }
+const CustomTable = (props) => {
+	return (
+		<div className={styles.container}>
+			<table className={styles.table}>
+				{props.children}
+			</table>
+		</div>
+	);
+}
+
+export const getListContentToDisplay = (maxCol, list, SubComponent) => {
+	if (list && list.length === 0) {
+		return <tr><td colSpan={maxCol}>There are currently data for this section</td></tr>;
+	}
+
+	return list.map(item => {
+		return <SubComponent key={item.id} details={item} />;
+	})
 }
 
 export default CustomTable;

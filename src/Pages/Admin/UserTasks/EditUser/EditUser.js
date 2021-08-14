@@ -1,132 +1,100 @@
-import React, { Component } from 'react';
-import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
-import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
+import React, { useState, useEffect } from 'react';
+import { hideSpinner, openModal, showSpinner } from '../../../../redux/actions/actionCreators';
+import * as PageCompos from '../../../../Components/pageComponents';
 import UserDetailsForm from '../../../../Containers/UserDetailsForm/UserDetailsForm';
 import { uploadImageAndGetURL } from '../../../../utils/commonMethods'
-import Spinner from '../../../../Components/UI/Spinner/Spinner';
-import Modal from '../../../../Components/UI/Modal/Modal';
 import firebase from 'firebase';
 import 'firebase/database';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 
-class EditUser extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: false,
-            userDetails: null
-        }
+const EditUser = (props) => {
+	const [userDetails, setUserDetails] = useState(null);
+	const dispatch = useDispatch();
+	const history = useHistory();
 
-        this.formSubmitHandler = this.formSubmitHandler.bind(this);
-    }
+	useEffect(() => {
+		dispatch(showSpinner());
+		const userId = props.match.params.userId;
+		firebase.database().ref('/users/' + userId)
+			.once('value')
+			.then(snapshot => {
+				return snapshot.val();
+			})
+			.then(userDetails => {
+				dispatch(hideSpinner());
+				setUserDetails({
+					id: userId,
+					...userDetails
+				})
+			})
+	}, [dispatch, props.match.params.userId])
 
-    componentDidMount() {
-        const userId = this.props.match.params.userId;
-        firebase.database().ref('/users/' + userId)
-            .once('value')
-            .then(snapshot => {
-                return snapshot.val();
-            })
-            .then(userDetails => {
-                this.setState({
-                    isLoading: false,
-                    userDetails: {
-                        id: userId,
-                        ...userDetails
-                    }
-                })
-            })
-    }
+	const formSubmitHandler = async (newUserDetails, uploadedImageFile) => {
+		dispatch(showSpinner())
+		const modalDetails = await editUserHandler(newUserDetails, uploadedImageFile);
+		dispatch(openModal(modalDetails));
+	}
 
-    async formSubmitHandler(userDetails, uploadedImageFile) {
-        this.setState({
-            isLoading: true,
-        })
-        const modalDetails = await this.editUserHandler(userDetails, uploadedImageFile);
-        this.setState({
-            isLoading: false,
-            modal: {
-                key: Math.random(),
-                ...modalDetails
-            }
-        })
-    }
+	const editUserHandler = async (newUserDetails, uploadedImageFile) => {
+		for (let field in newUserDetails) {
+			if (userDetails[field] && userDetails[field] === newUserDetails[field]) {
+				delete newUserDetails[field];
+			}
+		}
+		delete newUserDetails.password;
 
-    async editUserHandler(userDetails, uploadedImageFile) {
-        this.setState({
-            isLoading: true
-        })
-        const originalDetails = this.state.userDetails;
+		if (Object.keys(newUserDetails).length === 0 && !uploadedImageFile) {
+			return {
+				type: 'info',
+				title: 'No Changes',
+				content: 'You did not make any changes for user',
+			}
+		}
 
-        for (let field in userDetails) {
-            if (originalDetails[field] && originalDetails[field] === userDetails[field]) {
-                delete userDetails[field];
-            }
-        }
-        delete userDetails.password;
+		// upload image to firebase and get url
+		if (uploadedImageFile) {
+			const imageName = newUserDetails.fullName.replaceAll(' ', '-') + '-' + userDetails.id;
+			const imageURL = await uploadImageAndGetURL(uploadedImageFile, imageName);
+			if (!imageURL) {
+				return {
+					type: 'error',
+					content: 'Upload image failed, please try again later!'
+				}
+			}
+			newUserDetails.image = imageURL;
+		}
 
-        if (Object.keys(userDetails).length === 0 && !uploadedImageFile) {
-            return {
-                type: 'info',
-                title: 'No Changes',
-                content: 'You did not make any changes for this user',
-            }
-        }
+		// update user document
+		const modalDetails = await firebase.database().ref('users/' + userDetails.id)
+			.update(newUserDetails)
+			.then(() => {
+				return {
+					type: 'success',
+					content: 'User details were successfully updated!',
+					okButtonHandler: () => history.push('/all-users'),
+				}
+			})
+			.catch(() => {
+				return {
+					content: 'Update has failed, please try again later!'
+				}
+			})
 
-        // upload image to firebase and get url
-        if (uploadedImageFile) {
-            const imageName = userDetails.fullName.replaceAll(' ', '-') + '-' + originalDetails.id;
-            const imageURL = await uploadImageAndGetURL(uploadedImageFile, imageName);
-            if (imageURL) {
-                userDetails.image = imageURL;
-            }
-            else {
-                return {
-                    type: 'error',
-                    content: 'Upload image failed, please try again later!'
-                }
-            }
-        }
+		return modalDetails;
+	}
 
-        // update user document
-        const modalDetails = await firebase.database().ref('users/' + originalDetails.id)
-            .update(userDetails)
-            .then(() => {
-                return {
-                    type: 'success',
-                    content: 'User details were successfully updated!',
-                    okButtonHandler: () => window.location.reload(),
-                }
-            })
-            .catch(() => {
-                return {
-                    type: 'error',
-                    content: 'Update has failed, please try again later!'
-                }
-            })
-
-        return modalDetails;
-    }
-
-    render() {
-        return !this.state.userDetails ? <Spinner /> : (
-            <React.Fragment>
-                <PageHeader
-                    title="User Details"
-                    description="Review and/or edit user details." />
-
-                <PageMainContainer >
-                    <UserDetailsForm
-                        action="edit"
-                        userDetails={this.state.userDetails}
-                        onSubmitHandler={this.formSubmitHandler} />
-                </PageMainContainer>
-                {this.state.isLoading && <Spinner />}
-                {this.state.modal && <Modal key={this.state.modal.key} {...this.state.modal} />}
-            </React.Fragment>
-
-        );
-    }
+	return userDetails && (
+		<PageCompos.MainContentLayout
+			title="User Details"
+			description="Review and/or edit user details.">
+			<UserDetailsForm
+				action="edit"
+				userDetails={userDetails}
+				onSubmitHandler={formSubmitHandler} />
+		</PageCompos.MainContentLayout>
+	);
 }
 
 export default EditUser;

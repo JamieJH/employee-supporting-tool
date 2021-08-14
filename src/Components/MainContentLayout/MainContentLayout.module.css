@@ -1,0 +1,13 @@
+.mainContent {
+  background-color: var(--text-white);
+  border-radius: 5px;
+  min-height: 50vh;
+  padding: 20px;
+  box-shadow: 0 0 2px #cecece;
+}
+
+@media (min-width: 768px) {
+  .mainContent {
+    padding: 20px 40px;
+  }
+}

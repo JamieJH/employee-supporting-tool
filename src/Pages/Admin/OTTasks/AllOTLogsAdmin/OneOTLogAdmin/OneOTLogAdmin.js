@@ -1,139 +1,114 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import { openModal, showSpinner, hideSpinner } from '../../../../../redux/actions/actionCreators';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { timestampInSecsToDate, getUserAssociatedWithId } from '../../../../../utils/commonMethods';
+import { inputDateToDateString, getUserAssociatedWithId } from '../../../../../utils/commonMethods';
 import { OTLogDetailsPropTypes } from '../../../../../utils/customPropTypes';
-import AvatarNameEmail from '../../../../../Components/UI/AvatarNameEmail/AvatarNameEmail';
-import IconButton from '../../../../../Components/UI/IconButton/IconButton';
+import { AvatarNameEmail, IconButton } from '../../../../../Components/index';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
-class OneOTLogAdmin extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: true,
-            employeeInfo: null
-        }
-        
-        this.processRequestHandler = this.processRequestHandler.bind(this);
-        this.onClickProcessButtonHandler = this.onClickProcessButtonHandler.bind(this);
-    }
+const OneOTLogAdmin = (props) => {
+	const [employeeInfo, setEmployeInfo] = useState(null);
+	const [status, setStatus] = useState(props.details.status);
+	const dispatch = useDispatch();
+	const currentAdminId = useSelector(state => state.auth.userId);
 
-    componentDidMount() {
-        getUserAssociatedWithId(this.props.details.employeeId)
-            .then(employee => {
-                this.setState({
-                    isLoading: false,
-                    employeeInfo: {
-                        fullName: employee.fullName,
-                        email: employee.email,
-                        image: employee.image
-                    }
-                })
-            })
+	useEffect(() => {
+		getUserAssociatedWithId(props.details.employeeId)
+			.then(employee => {
+				setEmployeInfo({
+					fullName: employee.fullName,
+					email: employee.email,
+					image: employee.image
+				})
+				dispatch(hideSpinner());
+			})
+	}, [dispatch, props.details.employeeId])
 
-    }
 
-    processRequestHandler(action) {
-        this.setState({
-            isLoading: true
-        })
-        firebase.database().ref('/ot-logs /' + this.props.details.id)
-            .update({
-                processorId: this.props.adminId,
-                status: action
-            })
-            .then(() => {
-                return {
-                    status: action,
-                    modal: {
-                        type: "success",
-                        content: "This absent request has been successfully " + action,
-                    }
-                }
-            })
-            .catch(() => {
-                return {
-                    modal: {
-                        type: "error",
-                        content: "Something went wrong, please try again later!"
-                    }
-                }
-            })
-            .then(stateDetails => {
-                stateDetails.modal.key = Math.random();
-                this.setState({
-                    isLoading: false,
-                    ...stateDetails,
-                })
-            })
-    }
+	const processRequestHandler = (action) => {
+		dispatch(showSpinner())
+		firebase.database().ref('/ot-logs/' + props.details.id)
+			.update({
+				processorId: currentAdminId,
+				status: action
+			})
+			.then(() => {
+				setStatus(action);
+				dispatch(openModal({
+					type: "success",
+					content: "This absent request has been successfully " + action,
+				}))
+			})
+			.catch(() => {
+				dispatch(openModal({
+					type: "error",
+					content: "Something went wrong, please try again later!"
+				}))
+			})
+	}
 
-    onClickProcessButtonHandler(action) {
-        this.setState({
-            modal: {
-                key: Math.random(),
-                type: "warning",
-                content: "Are you sure you want to approve/deny this OT log?",
-                okButtonHandler: () => this.processRequestHandler(action),
-            }
-        })
-    }
+	const onClickProcessButtonHandler = (action) => {
+		dispatch(openModal({
+			type: "warning",
+			content: "Are you sure you want to approve/deny this OT log?",
+			okButtonHandler: () => processRequestHandler(action),
+		}))
+	}
 
-    render() {
-        const details = this.props.details;
+	const details = props.details;
 
-        return this.state.isLoading
-            ? <tr><td></td></tr>
-            : <React.Fragment>
-                <tr>
-                    <td>
-                        <AvatarNameEmail
-                            email={this.state.employeeInfo.email}
-                            image={this.state.employeeInfo.image}
-                            fullName={this.state.employeeInfo.fullName}
-                        />
-                    </td> 
-                    <td>
-                        <p>{timestampInSecsToDate(details.date)}</p>
-                        <p>{`${details.fromTime}h - ${details.toTime}h`}</p>
-                    </td>
+	return !employeeInfo
+		? <tr><td></td></tr>
+		: <React.Fragment>
+			<tr>
+				<td>
+					<AvatarNameEmail
+						email={employeeInfo.email}
+						image={employeeInfo.image}
+						fullName={employeeInfo.fullName}
+					/>
+				</td>
+				<td>
+					<p>{inputDateToDateString(details.date)}</p>
+					<p>{`${details.fromTime}h - ${details.toTime}h`}</p>
+				</td>
 
-                    <td>{details.workSummary}</td>
-                    <td data-status={details.status}>
-                        {details.status}
-                    </td>
-                    <td align="center" style={{whiteSpace: 'nowrap'}}>
-                        <Link to={`/edit-ot/${details.id}`}>
-                            <IconButton fontAwesomeCode="fa-eye" type="info" title="edit details" />
-                        </Link>
+				<td>{details.workSummary}</td>
+				<td data-status={status}>
+					{status}
+				</td>
+				<td align="center" style={{ whiteSpace: 'nowrap' }}>
+					<Link to={`/edit-ot/${details.id}`}>
+						<IconButton fontAwesomeCode="fas fa-eye" type="info" title="edit details" />
+					</Link>
 
-                        {details.status === 'pending' &&
-                            <React.Fragment>
-                                <IconButton
-                                    fontAwesomeCode="fa-check"
-                                    type="success"
-                                    title="approve request"
-                                    onClick={() => this.onClickProcessButtonHandler('approved')}
-                                />
-                                <IconButton
-                                    fontAwesomeCode="fa-times"
-                                    type="danger"
-                                    title="deny request"
-                                    onClick={() => this.onClickProcessButtonHandler('denied')}
-                                />
-                            </React.Fragment>
-                        }
-                    </td>
-                </tr>
-            </React.Fragment>
-            ;
-    }
-
+					{status === 'pending' &&
+						<React.Fragment>
+							<IconButton
+								fontAwesomeCode="fas fa-check"
+								type="success"
+								title="approve request"
+								onClick={() => onClickProcessButtonHandler('approved')}
+							/>
+							<IconButton
+								fontAwesomeCode="fas fa-times"
+								type="danger"
+								title="deny request"
+								onClick={() => onClickProcessButtonHandler('denied')}
+							/>
+						</React.Fragment>
+					}
+				</td>
+			</tr>
+		</React.Fragment>
+		;
 }
 
+
 OneOTLogAdmin.propTypes = {
-    details: OTLogDetailsPropTypes
+	details: OTLogDetailsPropTypes
 }
 
 export default OneOTLogAdmin;

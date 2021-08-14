@@ -1,123 +1,110 @@
-import React, { Component } from 'react';
-import PageHeader from '../../../../Components/UI/PageHeader/PageHeader';
-import PageMainContainer from '../../../../Components/UI/PageMainContainer/PageMainContainer';
+import React, { useState, useEffect } from 'react';
+import * as PageCompos from '../../../../Components/pageComponents';
 import AbsenceFormAdmin from '../../../../Containers/AbsenceForm/AbsenceFormAdmin/AbsenceFormAdmin';
 import { getUserAssociatedWithId } from '../../../../utils/commonMethods';
-
+import { hideSpinner, openModal, showSpinner } from '../../../../redux/actions/actionCreators';
+import { useDispatch } from 'react-redux';
 import firebase from 'firebase/app';
 import 'firebase/database';
-import Spinner from '../../../../Components/UI/Spinner/Spinner';
-import Modal from '../../../../Components/UI/Modal/Modal';
+import { useHistory } from 'react-router-dom';
 
-class EditAbsenceRequest extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: true,
-            requestDetails: null,
-            modal: null,
-        }
+const EditAbsenceRequest = (props) => {
+	const [requestDetails, setRequestDetails] = useState(null);
+	const dispatch = useDispatch();
+	const history = useHistory();
 
-        this.setModalState = this.setModalState.bind(this);
-        this.editAbsenceRequestHandler = this.editAbsenceRequestHandler.bind(this);
-    }
+	useEffect(() => {
+		async function fetchData() {
+			const requestId = props.match.params.requestId;
 
-    async componentDidMount() {
-        const requestId = this.props.match.params.requestId;
-        let requestDetails;
-        await firebase.database().ref('/absence-requests/' + requestId)
-            .once('value')
-            .then(snapshot => {
-                requestDetails = snapshot.val();
-            })
+			// get absence information
+			const requestDetails = await firebase.database().ref('/absence-requests/' + requestId)
+				.once('value')
+				.then(snapshot => {
+					return snapshot.val();
+				})
 
-        // get processor name
-        if (requestDetails.processorId) {
-            const processor = await getUserAssociatedWithId(requestDetails.processorId);
-            requestDetails.processorFullName = processor.fullName;
-        }
-
-        const employee = await getUserAssociatedWithId(requestDetails.employeeId);
-        requestDetails.employeeEmail = employee.email;
-        requestDetails.id = requestId;
+			if (!requestDetails) {
+				dispatch(openModal({
+					content: 'Cannot get this request details, try again later!'
+				}))
+				return;
+			}
 
 
-        this.setState({
-            isLoading: false,
-            requestDetails: {
-                id: requestId,
-                ...requestDetails
-            }
-        })
-    }
+			// get processor name
+			if (requestDetails.processorId) {
+				const processor = await getUserAssociatedWithId(requestDetails.processorId);
+				if (!processor) {
+					dispatch(openModal({
+						content: 'Cannot get processor information, try again later!'
+					}))
+					return
+				}
+				requestDetails.processorFullName = processor.fullName;
+			}
 
-    editAbsenceRequestHandler(requestDetails, requestId) {
-        const modalDetails = {
-            type: 'warning',
-            content: 'Press OK if you are sure all entered details are correct ',
-            okButtonHandler: () => this.modalConfirmHandler(requestDetails, requestId),
-        }
+			// get absence request employee email and id
+			const employee = await getUserAssociatedWithId(requestDetails.employeeId);
+			if (!employee) {
+				dispatch(openModal({
+					content: 'Cannot get employee information, try again later!'
+				}))
+				return;
+			}
+			requestDetails.employeeEmail = employee.email;
+			requestDetails.id = requestId;
 
-        this.setModalState(modalDetails);
-    }
+			setRequestDetails(requestDetails);
+			dispatch(hideSpinner());
+		}
+		dispatch(showSpinner());
+		fetchData();
+	}, [dispatch, props.match.params.requestId])
 
-    modalConfirmHandler(requestDetails, requestId) {
-        this.setState({
-            isLoading: true
-        })
-        firebase.database().ref('/absence-requests/' + requestId)
-            .set(requestDetails)
-            .then(() => {
-                return {
-                    type: 'success',
-                    content: 'The request has been succecssfully updated!',
-                    okButtonHandler: () => window.location.reload()
-                };
-            })
-            .catch(() => {
-                return {
-                    type: 'error',
-                    content: 'Something went wrong, please try again later',
-                };
-            })
-            .then(modalDetails => {
-                this.setModalState(modalDetails);
-            })
-    }
+	const editAbsenceRequestHandler = (requestDetails) => {
+		console.log(requestDetails);
+		const requestId = requestDetails.id;
+		delete requestDetails.id;
+		delete requestDetails.processorFullName;
+		delete requestDetails.employeeEmail;
+		dispatch(openModal({
+			type: 'warning',
+			content: 'Press OK if you are sure all entered details are correct ',
+			okButtonHandler: () => modalConfirmHandler(requestDetails, requestId),
+		}))
+	}
 
-    setModalState(modalDetails) {
-        this.setState({
-            isLoading: false,
-            modal: {
-                key: Math.random(),
-                ...modalDetails
-            }
-        })
-    }
+	const modalConfirmHandler = (requestDetails, requestId) => {
+		dispatch(showSpinner());
+		firebase.database().ref('/absence-requests/' + requestId)
+			.set(requestDetails)
+			.then(() => {
+				dispatch(openModal({
+					type: 'success',
+					content: 'The request has been succecssfully updated!',
+					okButtonHandler: () => history.push('/absence-requests')
+				}))
+			})
+			.catch(() => {
+				dispatch(openModal({
+					type: 'error'
+				}))
+			})
+	}
 
-    render() {
-        return this.state.isLoading
-            ? <Spinner />
-            : (
-                <React.Fragment>
-                    <PageHeader
-                        title="Edit Request"
-                        description="Edit absence duration and its status" />
 
-                    <PageMainContainer>
-                        <AbsenceFormAdmin
-                            action="edit"
-                            requestDetails={this.state.requestDetails}
-                            onSubmitHandler={this.editAbsenceRequestHandler}
-                        />
-                    </PageMainContainer>
-
-                    {this.state.modal && <Modal key={this.state.modal.key} {...this.state.modal} />}
-                    {this.state.isLoading && <Spinner />}
-
-                </React.Fragment>
-            );
-    }
+	return requestDetails && (
+		<PageCompos.MainContentLayout
+			title="Edit Request"
+			description="Edit absence duration and its status">
+			<AbsenceFormAdmin
+				action="edit"
+				requestDetails={requestDetails}
+				onSubmitHandler={editAbsenceRequestHandler}
+			/>
+		</PageCompos.MainContentLayout>
+	);
 }
 
 EditAbsenceRequest.propTypes = {

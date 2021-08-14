@@ -3,6 +3,10 @@
     text-align: left;
 }
 
+.employee, .workSummary {
+    text-align: left;
+}
+
 .workSummary {
     min-width: 200px;
 }
