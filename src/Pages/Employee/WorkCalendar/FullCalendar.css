@@ -1,0 +1,38 @@
+.fc {
+  /* max-width: 1000px; */
+  /* margin: 0 auto; */
+}
+
+.fc a {
+  color: var(--text-dark);
+}
+
+.fc-daygrid-event {
+  min-height: 40px;
+  box-sizing: border-box;
+  margin: 2px 0 !important;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.fc-header-toolbar > .fc-toolbar-chunk:first-child {
+  margin-right: 10px;
+}
+
+.fc-toolbar-chunk {
+  display: flex;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 22px;
+}
+
+.fc-toolbar-chunk .fc-button {
+  font-size: 14px;
+  text-transform: capitalize;
+  padding: 5px 10px;
+}
+
+.fc-toolbar-chunk .fc-button-group button{
+  padding-top: 3px;
+}

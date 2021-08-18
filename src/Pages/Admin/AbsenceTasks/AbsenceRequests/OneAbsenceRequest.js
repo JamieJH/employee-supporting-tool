@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { openModal, showSpinner } from '../../../../../redux/actions/actionCreators';
+import { openModal, showSpinner } from '../../../../redux/actions/actionCreators';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { absenceRequestDetailsPropTypes } from '../../../../../utils/customPropTypes'
-import { inputDateToDateString } from '../../../../../utils/commonMethods';
-import { AvatarNameEmail, IconButton } from '../../../../../Components/index';
+import { absenceRequestDetailsPropTypes } from '../../../../utils/customPropTypes'
+import { inputDateToDateString } from '../../../../utils/commonMethods';
+import { AvatarNameEmail, IconButton } from '../../../../Components/index';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
@@ -14,6 +14,7 @@ const OneAbsenceRequest = (props) => {
 	const [userDetails, setUserDetails] = useState(null);
 	const [processor, setProcessor] = useState(null);
 	const currentAdminId = useSelector(state => state.auth.userId);
+	const currentAdminName = useSelector(state => state.auth.userDetails.fullName);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -58,6 +59,7 @@ const OneAbsenceRequest = (props) => {
 			})
 			.then(() => {
 				setStatus(action);
+				setProcessor(currentAdminName);
 				dispatch(openModal({
 					content: "Absent request has been successfully " + action,
 					type: 'success'

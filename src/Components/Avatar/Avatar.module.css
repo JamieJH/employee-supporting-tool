@@ -17,7 +17,7 @@
 }
 
 .nameInitials {
-    background-color: var(--color-profile-image);
+    background-color: var(--color-success);
     text-transform: uppercase;
     color: var(--text-white);
     display: flex;

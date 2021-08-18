@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import OTForm from './OTForm';
 import { Field } from 'react-final-form';
 
-import styles from '../FormStyles.module.css';
+import styles from './OTForm.module.css';
+import classNames from 'classnames';
 
 const OTFormAdmin = (props) => {
 	const [isInputsDisabled, setInputsDiabled] = useState(true);
@@ -18,9 +19,9 @@ const OTFormAdmin = (props) => {
 		if (files) {
 			return <div className={styles.initialFiles}>
 				<h4>Current uploaded Files <i className="fas fa-cloud-download-alt"></i></h4>
-				<div className={styles.initialFilesLinks}>
+				<div className={classNames("uploadedFiles", styles.uploadedFiles)}>
 					{files.map((file) => {
-						return <a key={file.name} href={file.url} target="_blank" rel="noreferrer">{file.name}</a>
+						return <p><a key={file.name} href={file.url} target="_blank" rel="noreferrer">{file.name}</a></p>
 					})}
 				</div>
 			</div>
@@ -36,9 +37,9 @@ const OTFormAdmin = (props) => {
 				onSubmitHandler={onSubmitHandler}
 				toggleAdminInputDisabled={setInputsDiabled}
 				>
-				<Field className={styles.formInput} name="status">
+				<Field name="status">
 					{({ input }) => (
-						<div className={styles.formInput}>
+						<div className="formInput">
 							<label htmlFor="status">status</label>
 							<select id="status" disabled={props.action === 'edit' && isInputsDisabled} {...input}>
 								<option value="pending">pending</option>
@@ -48,20 +49,20 @@ const OTFormAdmin = (props) => {
 						</div>
 					)}
 				</Field>
-				<Field className={styles.formInput} name="processorComment">
+				<Field name="processorComment">
 					{({ input }) => (
-						<div className={styles.formInput}>
+						<div className="formInput">
 							<label htmlFor="processor-comment">processor comment</label>
 							<textarea id="processor-comment" disabled={props.action === 'edit' && isInputsDisabled} {...input} />
 						</div>
 					)}
 				</Field>
-				<Field className={styles.formInput} name="processorEmail">
+				<Field name="processorEmail">
 					{({ input }) => (
-						<div className={styles.formInput}>
+						<div className="formInput">
 							<label htmlFor="processor-email">processor</label>
 							<input type="text" id="processor-email" disabled {...input} />
-							<span className={styles.inputFootnote}>
+							<span className="inputFootnote">
 								Adding (or Editing) OT log will make you the latest processor.
 							</span>
 						</div>

@@ -2,8 +2,8 @@ import React from 'react';
 
 import Login from './Entry/Login/Login';
 
-const HomePage = React.lazy(() => import('./Home/Home'));
-const AllUsers = React.lazy(() => import('./Admin/UserTasks/AllUsers/AllUsers'));
+import WorkCalendar from './Employee/WorkCalendar/WorkCalendar';
+import AllUsers from './Admin/UserTasks/AllUsers/AllUsers';
 const AddUser = React.lazy(() => import('./Admin/UserTasks/AddUser/AddUser'));
 const EditUser = React.lazy(() => import('./Admin/UserTasks/EditUser/EditUser'));
 const AbsenceRequestsAdmin = React.lazy(() => import('./Admin/AbsenceTasks/AbsenceRequests/AbsenceRequestsAdmin'));
@@ -16,11 +16,14 @@ const AllOTLogsEmployee = React.lazy(() => import('./Employee/OTTasks/AllOTLogs/
 const LogOTAdmin = React.lazy(() => import('./Admin/OTTasks/LogOT/LogOTAdmin'));
 const LogOTEmployee = React.lazy(() => import('./Employee/OTTasks/LogOT/LogOTEmployee'));
 const EditOTLog = React.lazy(() => import('./Admin/OTTasks/EditOTLog/EditOTLog'));
+const SalaryFormula = React.lazy(() => import('./SuperAdmin/SalaryTasks/SalaryFormula/SalaryFormula'));
+const SalaryPayout = React.lazy(() => import('./SuperAdmin/SalaryTasks/SalaryPayout/SalaryPayout'));
+const SalaryProgress = React.lazy(() => import('./Employee/SalaryProgress/SalaryProgress'));
 
 export { 
-    HomePage, Login, AllUsers, AddUser, EditUser,
+    Login, AllUsers, AddUser, EditUser,
     AbsenceRequestsAdmin, AbsenceRequestsEmployee, AddAbsenceRequestAdmin,
     AddAbsenceRequestEmployee, EditAbsenceRequest, AllOTLogsAdmin,
     AllOTLogsEmployee, LogOTAdmin, LogOTEmployee, EditOTLog,
-    
+    SalaryFormula, SalaryPayout, SalaryProgress, WorkCalendar    
 }

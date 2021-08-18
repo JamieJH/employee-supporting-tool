@@ -1,0 +1,29 @@
+.salaryPayoutForm, .amountTables {
+	margin-bottom: 30px;
+}
+
+.salaryPayoutForm > * {
+	width: 100%;
+}
+
+.checkboxInput>* {
+	display: inline-block;
+	margin-right: 20px;
+	width: fit-content !important;
+	vertical-align: middle;
+}
+
+.calculateButton {
+	padding: 10px 20px;
+	max-width: 120px;
+	color: var(--text-white);
+	font-weight: 600;
+	font-size: 16px;
+	background-color: var(--color-success);
+	transition: all .3s ease;
+}
+
+.calculateButton:hover {
+	background-color: var(--theme-dark-bg);
+	color: var(--text-white);
+}

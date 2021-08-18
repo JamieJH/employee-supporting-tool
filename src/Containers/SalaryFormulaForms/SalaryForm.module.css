@@ -1,0 +1,65 @@
+.percentageForm, .percentageWithOperationsForm {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+
+.percentageForm>* {
+	width: 50%;
+}
+
+.percentageWithOperationsForm>* {
+	width: 50%;
+	white-space: nowrap;
+}
+
+.percentageForm p, .percentageWithOperationsForm p {
+	padding-left: 10px;
+	margin: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.defaultFields, .formTextField p {
+	display: inline-block;
+	width: 100%;
+	border-radius: 5px;
+	background-color: var(--color-input-border);
+	padding: 10px;
+	margin-left: 10px;
+}
+
+.formTextField, .personalIncomeTaxFields {
+	width: 100%;
+	margin-bottom: 20px;
+	box-sizing: border-box;
+}
+
+.personalIncomeTaxFields>* {
+	width: 100%;
+}
+
+.formTextField p {
+	margin: 0;
+	box-sizing: border-box;
+	margin-bottom: 15px;
+}
+
+.formTextField h4 {
+	font-weight: 600;
+	text-transform: capitalize;
+}
+
+.personalIncomeTaxFields {
+	border: 2px solid var(--theme-dark-bg);
+	padding: 10px;
+	margin-top: 10px;
+	border-radius: 5px;
+}
+
+@media (min-width: 991px) {
+	.formTextField, .personalIncomeTaxFields {
+		width: 48%;
+	}
+}

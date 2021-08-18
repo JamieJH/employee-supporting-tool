@@ -22,13 +22,96 @@
     --color-success: #45c39d;
     --color-warning: #ffb200;
     --color-info: #3769ac;
-    --color-profile-image: #1b998b;
     --color-spinner: #151a41;
 
     --color-input-border: #dcdfe4;
     /* --color-input-border: #b2bad1; */
     --color-backdrop: #ffffff87;
 
+    --max-page-main-content-width: 1000px;
+}
+
+
+.formInput {
+    position: relative;
+    margin-bottom: 20px;
+    vertical-align: top;
+    box-sizing: border-box;
+}
+
+.formInput > * {
+    display: block;
+    margin: 5px 0;
+}
+
+.formInput > label {
+    font-weight: 600;
+    width: fit-content;
+    text-transform: capitalize;
+}
+
+.formInput input, .formInput select, .formInput textarea {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid var(--color-input-border);
+    box-sizing: border-box;
+}
+
+.formInput textarea {
+    resize: none;
+}
+
+.formInput select {
+    text-transform: capitalize;
+}
+
+.formInput input:disabled, .formInput select:disabled {
+    background-color: var(--color-input-border);
+}
+
+.inputFootnote {
+    font-size: 12px;
+    color: var(--color-warning);
+    font-weight: 700;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.fieldError {
+    color: var(--color-danger);
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.uploadedFiles {
+    margin-bottom: 20px;
+}
+
+.uploadedFiles * {
+    display: block;
+    margin: 5px 0;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: var(--text-dark);
+}
+
+.formInput.formFileInput {
+    width: 100%;
+}
+
+.formInput input:read-only {
+    background-color: var(--color-input-border);
+}
+
+h1, h2, h3, h4, p {
+    margin: 5px 0;
+    width: 100%;
+    /* text-transform: capitalize; */
 }
 
 @media (min-width: 768px) {
@@ -40,8 +123,28 @@
     }
 }
 
+@media (min-width: 991px) {
+    .form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }   
+    
+    .formInput {
+        display: inline-block;
+        width: 48%;
+        box-sizing: border-box;
+    }    
+
+    .formInput.checkboxInput {
+        padding-top: 35px;
+    }
+
+}
+
 @media (min-width: 1400px) {
-    :root {
-        --max-page-main-content-width: 1000px
+    .form {
+        width: var(--max-page-main-content-width);
+        margin: 0 auto;
     }
 }

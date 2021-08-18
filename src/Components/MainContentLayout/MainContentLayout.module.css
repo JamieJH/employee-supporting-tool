@@ -1,4 +1,4 @@
-.mainContent {
+.mainContentContainer {
   background-color: var(--text-white);
   border-radius: 5px;
   min-height: 50vh;
@@ -6,8 +6,32 @@
   box-shadow: 0 0 2px #cecece;
 }
 
+.pageHeader {
+  margin-bottom: 30px;
+}
+.pageHeader h1 {
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+}
+
+.mainContent {
+  width: 100%;
+}
+
+.maxWidth {
+  max-width: var(--max-page-main-content-width);
+  margin: 0 auto;
+}
+
 @media (min-width: 768px) {
-  .mainContent {
+  .mainContentContainer {
     padding: 20px 40px;
   }
+
 }
+/* 
+@media (min-width: 768px) {
+  .mainContent.maxWidth {
+    padding: 20px calc((100% - 1000px) / 2);
+  }
+} */

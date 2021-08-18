@@ -3,6 +3,10 @@
     text-align: left;
 }
 
+.employeeType {
+    min-width: 120px;
+}
+
 
 .date {
     min-width: 120px;

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { openModal, showSpinner, hideSpinner } from '../../../../../redux/actions/actionCreators';
+import { openModal, showSpinner, hideSpinner } from '../../../../redux/actions/actionCreators';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { inputDateToDateString, getUserAssociatedWithId } from '../../../../../utils/commonMethods';
-import { OTLogDetailsPropTypes } from '../../../../../utils/customPropTypes';
-import { AvatarNameEmail, IconButton } from '../../../../../Components/index';
+import { inputDateToDateString, getUserAssociatedWithId } from '../../../../utils/commonMethods';
+import { OTLogDetailsPropTypes } from '../../../../utils/customPropTypes';
+import { AvatarNameEmail, IconButton } from '../../../../Components/index';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
@@ -72,9 +72,11 @@ const OneOTLogAdmin = (props) => {
 				</td>
 				<td>
 					<p>{inputDateToDateString(details.date)}</p>
-					<p>{`${details.fromTime}h - ${details.toTime}h`}</p>
+					<p>{details.fromTime}</p>
 				</td>
-
+				<td align="center">
+					{details.duration}
+				</td>
 				<td>{details.workSummary}</td>
 				<td data-status={status}>
 					{status}

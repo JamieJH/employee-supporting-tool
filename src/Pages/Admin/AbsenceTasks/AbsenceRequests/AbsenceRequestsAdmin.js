@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/database';
 import * as PageCompos from '../../../../Components/pageComponents';
-import OneAbsenceRequest from './OneAbsenceRequest/OneAbsenceRequest';
-
-import styles from './AbsenceRequestsAdmin.module.css';
+import OneAbsenceRequest from './OneAbsenceRequest';
 import { useDispatch } from 'react-redux';
 import { hideSpinner, showSpinner } from '../../../../redux/actions/modalSpinnerActions';
+
+import styles from './AbsenceRequestsAdmin.module.css';
 
 const AbsenceRequestsAdmin = () => {
 	const [requests, setRequests] = useState(null);

@@ -1,0 +1,18 @@
+.checkboxInput > * {
+  display: inline-block;
+  width: fit-content !important;
+  margin-right: 15px;
+  vertical-align: middle;
+}
+
+.imageContainer {
+  width: 80px;
+  height: 80px;
+}
+
+.imageContainer img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}

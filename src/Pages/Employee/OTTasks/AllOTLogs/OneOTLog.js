@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { inputDateToDateString, getUserAssociatedWithId } from '../../../../../utils/commonMethods';
-import { OTLogDetailsPropTypes } from '../../../../../utils/customPropTypes';
-import { AvatarNameEmail } from '../../../../../Components/index';
+import { inputDateToDateString, getUserAssociatedWithId } from '../../../../utils/commonMethods';
+import { OTLogDetailsPropTypes } from '../../../../utils/customPropTypes';
+import { AvatarNameEmail } from '../../../../Components/index';
 import { useState } from 'react';
 
 const OneOTLog = (props) => {
@@ -10,7 +10,6 @@ const OneOTLog = (props) => {
 
 	useEffect(() => {
 		if (props.details.processorId) {
-			console.log('hi');
 			setIsLoading(true);
 			getUserAssociatedWithId(props.details.processorId)
 				.then(processor => {
@@ -25,7 +24,6 @@ const OneOTLog = (props) => {
 	}, [props.details.processorId])
 
 	const details = props.details;
-	console.log(details);
 
 	return isLoading
 		? <tr><td></td></tr>
@@ -34,9 +32,11 @@ const OneOTLog = (props) => {
 				<td>{details.workSummary}</td>
 				<td>
 					<p>{inputDateToDateString(details.date)}</p>
-					<p>{`${details.fromTime}h - ${details.toTime}h`}</p>
+					<p>{details.fromTime}</p>
 				</td>
-
+				<td align="center">
+					{details.duration}
+				</td>
 				<td align="center" data-status={details.status}>
 					{details.status}
 				</td>

@@ -12,6 +12,19 @@ export const userDetailsPropTypes = PropTypes.exact({
     image: PropTypes.string,
     position: PropTypes.string.isRequired,
     role: PropTypes.oneOf(['employee', 'admin', 'superadmin']).isRequired,
+    grossSalary: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]).isRequired,
+    dependents: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]).isRequired,
+    maxAbsenceDays: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]).isRequired,
+    externalSalary: PropTypes.bool.isRequired,
 })
 
 export const absenceRequestDetailsPropTypes = PropTypes.exact({
@@ -31,9 +44,17 @@ export const OTLogDetailsPropTypes = PropTypes.exact({
     employeeId: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     fromTime: PropTypes.string.isRequired,
-    toTime: PropTypes.string.isRequired,
+    // toTime: PropTypes.string.isRequired,
+    duration: PropTypes.string.isRequired,
     status: PropTypes.oneOf(["approved", "pending", "denied"]).isRequired,
     processorComment: PropTypes.string,
     workSummary: PropTypes.string,
     files: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string))
 })
+
+export const SalaryFormulaFormPropTypes = {
+    children: PropTypes.element.isRequired,
+	formula: PropTypes.object.isRequired,
+	isInputsDisabled: PropTypes.bool.isRequired,
+    saveEditHandler: PropTypes.func.isRequired
+}

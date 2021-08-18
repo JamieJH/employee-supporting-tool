@@ -1,8 +1,8 @@
 import React from 'react';
-import { userDetailsPropTypes } from '../../../../../utils/customPropTypes';
+import { userDetailsPropTypes } from '../../../../utils/customPropTypes';
 import { Link } from 'react-router-dom';
-import { IconButton, AvatarNameEmail } from '../../../../../Components/index';
-import { inputDateToDateString } from '../../../../../utils/commonMethods';
+import { IconButton, AvatarNameEmail } from '../../../../Components/index';
+import { inputDateToDateString } from '../../../../utils/commonMethods';
 
 
 const OneEmployee = (props) => {

@@ -40,9 +40,16 @@
 .logo {
     background-color: var(--theme-dark-bg);
     border-radius: 50%;
-    width: fit-content;
-    padding: 20px;
     margin: 0 auto;
+    width: 110px;
+    height: 110px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.logo img {
+    width: 64px;
 }
 
 .form {

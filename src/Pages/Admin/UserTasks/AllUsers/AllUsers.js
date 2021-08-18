@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { hideSpinner, showSpinner } from '../../../../redux/actions/actionCreators';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as PageCompos from '../../../../Components/pageComponents';
-import OneUser from './OneUser/OneUser';
+import OneUser from './OneUser';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
@@ -10,13 +10,14 @@ import styles from './AllUsers.module.css';
 
 const AllUsers = () => {
 	const [employees, setEmployees] = useState(null);
+	const role = useSelector(state => state.auth.role);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		dispatch(showSpinner());
-		const usersDbRef = firebase.database().ref('/users');
-
-		usersDbRef.orderByChild('role').equalTo('employee').once('value')
+		let usersDbRef = firebase.database().ref('/users').orderByChild('role');
+		usersDbRef = (role === 'admin') ? usersDbRef.equalTo('employee') : usersDbRef;
+		usersDbRef.once('value')
 			.then(snapshot => {
 				return snapshot.val();
 			})
@@ -29,7 +30,7 @@ const AllUsers = () => {
 				dispatch(hideSpinner())
 				setEmployees(employees);
 			})
-	}, [dispatch])
+	}, [dispatch, role])
 
 	return (employees) && (
 		<PageCompos.MainContentLayout

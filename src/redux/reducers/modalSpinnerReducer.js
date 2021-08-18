@@ -17,7 +17,6 @@ const ModalSpinnerReducer = (state = initState, action) => {
   switch (action.type) {
     case actionTypes.OPEN_MODAL:
       const modalDetails = action.payload.modalDetails;
-      console.log(modalDetails);
 
       return updateState({
         isModalOpen: true,
