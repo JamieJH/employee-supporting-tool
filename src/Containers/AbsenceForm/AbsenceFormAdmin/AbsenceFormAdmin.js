@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import FunctionButton from '../../FunctionButton/FunctionButton';
 
-import styles from '../../FormStyles.module.css';
-
 const AbsenceFormAdmin = (props) => {
 	const processorId = useSelector(state => state.auth.userId);
 	const processorEmail = useSelector(state => state.auth.userDetails.email);
@@ -17,7 +15,6 @@ const AbsenceFormAdmin = (props) => {
 		processorId: processorId,
 		processorComment: ''
 	});
-	console.log(props.requestDetails);
 
 	useEffect(() => {
 		if (props.action === "edit") {
@@ -26,6 +23,7 @@ const AbsenceFormAdmin = (props) => {
 	}, [props.action])
 
 	const onInputChange = (e) => {
+		e.persist();
 		setFormDetails(prevDetails => {
 			return {
 				...prevDetails,
@@ -44,8 +42,8 @@ const AbsenceFormAdmin = (props) => {
 
 	return (
 		<React.Fragment>
-			<form className={styles.form} onSubmit={formSubmitHandler}>
-				<div className={styles.formInput}>
+			<form className="form" onSubmit={formSubmitHandler}>
+				<div className="formInput">
 					<label htmlFor="email">Employee Email</label>
 					<input type="text" id="email" name="employeeEmail"
 						value={formDetails.employeeEmail}
@@ -57,7 +55,7 @@ const AbsenceFormAdmin = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="reason">Reason</label>
 					<input type="text" id="reason" name="reason"
 						value={formDetails.reason}
@@ -67,7 +65,7 @@ const AbsenceFormAdmin = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="fromDate">From </label>
 					<input type="date" id="fromDate" name="fromDate"
 						value={formDetails.fromDate}
@@ -77,7 +75,7 @@ const AbsenceFormAdmin = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="toDate">To</label>
 					<input type="date" id="toDate" name="toDate"
 						value={formDetails.toDate}
@@ -87,7 +85,7 @@ const AbsenceFormAdmin = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="status">Status</label>
 					<select required id="status" name="status"
 						onChange={onInputChange}
@@ -99,17 +97,17 @@ const AbsenceFormAdmin = (props) => {
 					</select>
 				</div>
 
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="processor-id">Processor</label>
 					<input type="text" id="processor"
 						value={processorEmail}
 						readOnly
 						required disabled />
-					<p className={styles.inputFootnote}>
+					<p className="inputFootnote">
 						Adding request or changing its original details will list you as the Processor.
 					</p>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="processorComment">processor comment</label>
 					<input type="text" id="processorComment" name="processorComment"
 						placeholder="Example: reason for denial, encouragement, etc"

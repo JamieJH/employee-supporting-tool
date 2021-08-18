@@ -16,7 +16,8 @@ const LogOTEmployee = () => {
 
 	const initialValues = {
 		status: 'pending',
-		processorEmail: processorEmail
+		processorEmail: processorEmail,
+		processorComment: ''
 	}
 
 	const onSubmitHandler = async (logDetails, employeeEmail, files) => {

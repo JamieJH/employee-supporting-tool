@@ -3,6 +3,10 @@
     text-align: left;
 }
 
+.duration {
+    min-width: 150px;
+}
+
 .employee, .workSummary {
     text-align: left;
 }

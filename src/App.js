@@ -4,16 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Layout } from './Components/index';
 import { ProtectedRoute, SharedRoute } from './Components/Routes/RouteTypes';
 import {
-	HomePage, Login, AllUsers, AddUser, EditUser,
+	Login, AllUsers, AddUser, EditUser,
 	AbsenceRequestsAdmin, AbsenceRequestsEmployee, AddAbsenceRequestAdmin,
 	AddAbsenceRequestEmployee, EditAbsenceRequest, AllOTLogsAdmin,
-	AllOTLogsEmployee, LogOTAdmin, LogOTEmployee, EditOTLog
+	AllOTLogsEmployee, LogOTAdmin, LogOTEmployee, EditOTLog,
+	SalaryFormula, SalaryPayout, SalaryProgress, WorkCalendar
 } from './Pages/index';
 import Modal from './Components/Modal/Modal';
 import Spinner from './Components/Spinner/Spinner';
 
 import { closeModal, hideSpinner } from './redux/actions/modalSpinnerActions';
-
 const App = () => {
 	const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
 	const history = useHistory();
@@ -25,7 +25,7 @@ const App = () => {
 		if (!isLoggedIn) {
 			history.replace('/login');
 		}
-	}, [dispatch, history, isLoggedIn ])
+	}, [dispatch, history, isLoggedIn])
 
 
 	return (
@@ -40,7 +40,7 @@ const App = () => {
 									allowedRoles={["admin", "superadmin"]}
 									component={EditUser}
 								/>
-								<ProtectedRoute path="/employees" exact component={AllUsers} allowedRoles={["admin", "superadmin"]} />
+								<ProtectedRoute path="/all-users" exact component={AllUsers} allowedRoles={["admin", "superadmin"]} />
 								<ProtectedRoute path="/add-user" exact component={AddUser} allowedRoles={["admin", "superadmin"]} />
 								<ProtectedRoute path="/edit-request/:requestId" exact
 									component={EditAbsenceRequest}
@@ -56,7 +56,17 @@ const App = () => {
 								<SharedRoute path='/ot-logs' exact employeeComponent={AllOTLogsEmployee} adminComponent={AllOTLogsAdmin} />
 								<SharedRoute path='/log-ot' exact employeeComponent={LogOTEmployee} adminComponent={LogOTAdmin} />
 
-								<Route path="/" component={() => <HomePage />} />
+								<ProtectedRoute path="/salary-formula" exact
+									component={SalaryFormula}
+									allowedRoles={["superadmin"]} />
+								<ProtectedRoute path="/salary-payout" exact
+									component={SalaryPayout}
+									allowedRoles={["superadmin"]} />
+
+								<Route path="/salary" exact component={SalaryProgress} />
+								<Route path='/calendar' component={WorkCalendar} />
+								<Route path='/' exact component={WorkCalendar} />
+
 							</Switch>
 						</Suspense>
 					</Layout>

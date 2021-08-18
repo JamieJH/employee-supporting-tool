@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import { userDetailsPropTypes } from '../../utils/customPropTypes';
 import FunctionButton from '../FunctionButton/FunctionButton';
 import FileInput from '../FileInput/FileInput';
-
-import styles from '../FormStyles.module.css';
+import styles from './UserDetailsForm.module.css';
 import classNames from 'classnames';
 
 
@@ -23,23 +22,52 @@ const UserDetailsForm = (props) => {
 		position: '',
 		employeeType: '',
 		dateStarted: '',
-		password: ''
+		password: '',
+		grossSalary: '',
+		dependents: 0,
+		maxAbsenceDays: 0,
+		externalSalary: false
+
 	});
 	const [isInputsDisabled, setIsInputDisabled] = useState(false);
+	const [isExternalSalaryDisabled, setIsExternalSalaryDisabled] = useState(false);
 	const role = useSelector(state => state.auth.role);
 	const todayDate = new Date().toISOString().split("T")[0];
 
 	useEffect(() => {
 		if (props.action === "edit") {
 			setIsInputDisabled(true);
+			setIsExternalSalaryDisabled(true);
 		}
 	}, [props.action])
 
 	const onInputChange = (e) => {
+		e.persist();
+
+		setFormDetails(prevDetails => {
+			const newDetails = {...prevDetails};
+			newDetails[e.target.name] = e.target.value;
+
+			if (e.target.name === 'employeeType') {
+				if (e.target.value !== 'fresher') {
+					newDetails.externalSalary = false;
+					setIsExternalSalaryDisabled(true);
+				}
+				else {
+					setIsExternalSalaryDisabled(false);
+				}
+			}
+			
+			return newDetails;
+		});
+	}
+
+	const onInputChecboxChange = (e) => {
+		e.persist();
 		setFormDetails(prevDetails => {
 			return {
 				...prevDetails,
-				[e.target.name]: e.target.value
+				externalSalary: e.target.checked
 			}
 		})
 	}
@@ -99,11 +127,19 @@ const UserDetailsForm = (props) => {
 		}
 	}
 
+	const enableEditing = () => {
+		setIsInputDisabled(false);
+		if (formDetails.employeeType === 'fresher') {
+			setIsExternalSalaryDisabled(false);
+		}
+	}
+
 
 	return (
 		<React.Fragment>
-			<form onSubmit={formSubmitHandler} className={styles.form}>
-				<div className={styles.formInput}>
+			<form onSubmit={formSubmitHandler} className="form">
+				<h3>General Details</h3>
+				<div className="formInput">
 					<label htmlFor="full-name">Full Name</label>
 					<input type="text" id="full-name" name='fullName'
 						value={formDetails.fullName}
@@ -115,7 +151,7 @@ const UserDetailsForm = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="dob">Date of Birth</label>
 					<input type="date" id="dob" name="dob"
 						value={formDetails.dob}
@@ -125,7 +161,7 @@ const UserDetailsForm = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="gender">Gender</label>
 					<select required id="gender" name="gender"
 						value={formDetails.gender}
@@ -137,7 +173,7 @@ const UserDetailsForm = (props) => {
 						<option value="other">Other</option>
 					</select>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="employee-type">Employee Type</label>
 					<select required id="employee-type" name="employeeType"
 						value={formDetails.employeeType}
@@ -149,7 +185,7 @@ const UserDetailsForm = (props) => {
 						})}
 					</select>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="user-role">User Role</label>
 					<select required id="user-role" name="role"
 						value={formDetails.role}
@@ -161,7 +197,7 @@ const UserDetailsForm = (props) => {
 						})}
 					</select>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="position">Position</label>
 					<input type="text" id="position" name="position"
 						value={formDetails.position}
@@ -171,7 +207,7 @@ const UserDetailsForm = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="email">Email</label>
 					<input type="text" id="email" name='email'
 						value={formDetails.email}
@@ -183,7 +219,7 @@ const UserDetailsForm = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="password">Password</label>
 					<input type="text" id="password" name="password"
 						value={formDetails.password}
@@ -192,12 +228,12 @@ const UserDetailsForm = (props) => {
 						placeholder="Make sure you enter the right password before saving."
 						title="Contain at least 8 characters, including alphabetic characters and numbers."
 					/>
-					<p className={styles.inputFootnote}>
+					<p className="inputFootnote">
 						At least 8 characters, only alphabetic characters and numbers.
 					</p>
-					<p className={styles.fieldError}>{passwordError}</p>
+					<p className="fieldError">{passwordError}</p>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="date-started">Date Started</label>
 					<input type="date" id="date-started" name="dateStarted"
 						value={formDetails.dateStarted}
@@ -207,24 +243,64 @@ const UserDetailsForm = (props) => {
 						required
 					/>
 				</div>
-				<div className={classNames(styles.formInput, styles.formFileInput)}>
+
+				<h3>Salary Details</h3>
+				<div className="formInput">
+					<label htmlFor="monthly-gross">Monthly gross</label>
+					<input type="number" id="monthly-gross" name="grossSalary"
+						value={formDetails.grossSalary}
+						disabled={isInputsDisabled}
+						onChange={onInputChange}
+						min='0'
+						step='100000'
+						required
+					/>
+				</div>
+				<div className="formInput">
+					<label htmlFor="dependents">Number of dependents</label>
+					<input type="number" id="dependents" name="dependents"
+						value={formDetails.dependents}
+						disabled={isInputsDisabled}
+						onChange={onInputChange}
+						min='0'
+						required
+					/>
+				</div>
+				<div className="formInput">
+					<label htmlFor="absence-days">Total absence day per year</label>
+					<input type="number" id="absence-days" name="maxAbsenceDays"
+						value={formDetails.maxAbsenceDays}
+						disabled={isInputsDisabled}
+						onChange={onInputChange}
+						min='0'
+						required
+					/>
+				</div>
+				<div className={classNames("formInput", styles.checkboxInput)}>
+					<input type="checkbox" id="external-salary" name="externalSalary"
+						checked={formDetails.externalSalary}
+						disabled={isExternalSalaryDisabled}
+						onChange={onInputChecboxChange}
+					/>
+					<label htmlFor="external-salary">External Income (for Fresher only)</label>
+				</div>
+
+				<div className="formInput formFileInput">
 					<FileInput
 						accept="image/*"
-						uploadTitle="Upload Image"
+						uploadTitle="Upload User Profile Image"
 						uploadRules="JPG or PNG. Max size of 2MB"
 						onFileUploadHandler={onImageUploadedHandler}
 					/>
 					{imageError &&
-						<p className={styles.fieldError}>{imageError}</p>}
+						<p className="fieldError">{imageError}</p>}
 					{getImageContainerToDisplay()}
 				</div>
-
-				{props.children}
 
 				<FunctionButton
 					action={props.action}
 					isInputsDisabled={isInputsDisabled}
-					enabledInputs={() => setIsInputDisabled(false)} />
+					enabledInputs={enableEditing} />
 
 			</form>
 		</React.Fragment>

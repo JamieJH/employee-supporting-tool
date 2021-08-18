@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Form, Field } from 'react-final-form';
 import { uploadMultipleFilesAndGetURLs } from '../../utils/commonMethods';
 import FileInput from '../FileInput/FileInput';
-import styles from '../FormStyles.module.css';
 import firebase from "firebase/app";
 import 'firebase/database';
 import 'firebase/storage';
@@ -22,14 +21,6 @@ const OTForm = (props) => {
 		}
 	}, [props.action])
 
-
-	const checkEnteredTimeValidity = (fromTime, toTime) => {
-		const [fromTimeHour, fromTimeMinute] = fromTime.split(":");
-		const [toTimeHour, toTimeMinute] = toTime.split(":");
-
-		return (toTimeHour > fromTimeHour) ||
-			(toTimeHour === fromTimeHour && toTimeMinute > fromTimeMinute)
-	}
 
 	const onFileInputChange = (e) => {
 		const files = Array.from(e.target.files);
@@ -56,7 +47,7 @@ const OTForm = (props) => {
 
 	const getUploadedFilesNamesForDisplay = () => {
 		if (uploadedFiles) {
-			return <div className={styles.uploadedFiles}>
+			return <div className="uploadedFiles">
 				{uploadedFiles.map(file => {
 					return <p key={file.size}>{file.name}</p>
 				})}
@@ -70,7 +61,7 @@ const OTForm = (props) => {
 			const logDetails = {
 				date: formData.date,
 				fromTime: formData.fromTime,
-				toTime: formData.toTime,
+				duration: formData.duration,
 				workSummary: formData.workSummary,
 			}
 
@@ -100,18 +91,14 @@ const OTForm = (props) => {
 		if (!formData.fromTime) {
 			errors.fromTime = "Required";
 		}
-		if (!formData.toTime) {
-			errors.toTime = "Required";
+		if (formData.duration === undefined) {
+			errors.duration = "Required";
+		}
+		if (formData.duration === "0") {
+			errors.duration = "Must be at least 0.5 hours";
 		}
 		if (!formData.workSummary) {
 			errors.workSummary = "Required";
-		}
-		if (formData.fromTime && formData.toTime) {
-			const isTimeValid = checkEnteredTimeValidity(formData.fromTime, formData.toTime);
-			if (!isTimeValid) {
-				errors.fromTime = "Invalid time period";
-				errors.toTime = "Invalid time period";
-			}
 		}
 
 		return errors;
@@ -131,53 +118,53 @@ const OTForm = (props) => {
 			validate={validateForm}
 			initialValues={{ ...props.initialValues }}
 			render={({ handleSubmit }) => (
-				<form className={styles.form} onSubmit={handleSubmit}>
-					<Field className={styles.formInput} name="employeeEmail">
+				<form className="form" onSubmit={handleSubmit}>
+					<Field name="employeeEmail">
 						{({ input, meta }) => (
-							<div className={styles.formInput}>
+							<div className="formInput">
 								<label htmlFor="employee-email">Employee email</label>
 								<input type="text" id="employee-email"
 									placeholder="employeeemail@company.com"
 									disabled={props.action === 'edit' || props.role === 'employee'}
 									ref={emailRef}
 									{...input} />
-								{meta.touched && meta.error && <span className={styles.fieldError}>{meta.error}</span>}
+								{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 							</div>
 						)}
 					</Field>
-					<Field className={styles.formInput} name="date">
+					<Field name="date">
 						{({ input, meta }) => (
-							<div className={styles.formInput}>
+							<div className="formInput">
 								<label htmlFor="date">Date</label>
 								<input type="date" id="date" disabled={isInputsDisabled} {...input} />
-								{meta.touched && meta.error && <span className={styles.fieldError}>{meta.error}</span>}
+								{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 							</div>
 						)}
 					</Field>
-					<Field className={styles.formInput} name="fromTime">
+					<Field name="fromTime">
 						{({ input, meta }) => (
-							<div className={styles.formInput}>
+							<div className="formInput">
 								<label htmlFor="from-time">From (Time)</label>
 								<input type="time" id="from-hour" disabled={isInputsDisabled} {...input} />
-								{meta.touched && meta.error && <span className={styles.fieldError}>{meta.error}</span>}
+								{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 							</div>
 						)}
 					</Field>
-					<Field className={styles.formInput} name="toTime">
+					<Field name="duration">
 						{({ input, meta }) => (
-							<div className={styles.formInput}>
-								<label htmlFor="to-time">To (Time)</label>
-								<input type="time" id="to-hour" disabled={isInputsDisabled} {...input} />
-								{meta.touched && meta.error && <span className={styles.fieldError}>{meta.error}</span>}
+							<div className="formInput">
+								<label htmlFor="duration">OT Duration (hours)</label>
+								<input type="number" id="duration" min='0.5' step='0.5' disabled={isInputsDisabled} {...input} />
+								{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 							</div>
 						)}
 					</Field>
-					<Field className={styles.formInput} name="workSummary">
+					<Field name="workSummary">
 						{({ input, meta }) => (
-							<div className={styles.formInput}>
+							<div className="formInput">
 								<label htmlFor="work-summary">Work Summary</label>
 								<textarea id="work-summary" disabled={isInputsDisabled} {...input} rows="3" />
-								{meta.touched && meta.error && <span className={styles.fieldError}>{meta.error}</span>}
+								{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 							</div>
 						)}
 					</Field>
@@ -185,14 +172,14 @@ const OTForm = (props) => {
 					{props.children}
 
 					{props.action !== 'edit' &&
-						<div className={styles.formInput}>
+						<div className="formInput">
 							<FileInput
 								uploadTitle="Upload Related files"
 								uploadRules="Maximum 3 files and 3MB each.."
 								onFileUploadHandler={onFileInputChange}
 								multiple
 							/>
-							<span className={styles.fieldError}>{uploadFilesError}</span>
+							<span className="fieldError">{uploadFilesError}</span>
 							{getUploadedFilesNamesForDisplay()}
 						</div>
 					}

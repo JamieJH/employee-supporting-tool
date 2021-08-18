@@ -1,0 +1,16 @@
+.initialFiles {
+  margin-bottom: 20px;
+}
+
+.initialFiles h4, h3 {
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+.uploadedFiles {
+  overflow: hidden;
+}
+
+.uploadedFiles a {
+  text-decoration: underline;
+}

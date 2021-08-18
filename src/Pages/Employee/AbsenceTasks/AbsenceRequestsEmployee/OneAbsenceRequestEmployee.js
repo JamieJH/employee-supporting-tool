@@ -1,9 +1,9 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { AvatarNameEmail } from '../../../../../Components/index';
-import { inputDateToDateString, getUserAssociatedWithId } from '../../../../../utils/commonMethods';
-import { absenceRequestDetailsPropTypes } from '../../../../../utils/customPropTypes';
+import { AvatarNameEmail } from '../../../../Components/index';
+import { inputDateToDateString, getUserAssociatedWithId } from '../../../../utils/commonMethods';
+import { absenceRequestDetailsPropTypes } from '../../../../utils/customPropTypes';
 
 const OneAbsenceRequestEmployee = (props) => {
 	const [isLoading, setIsLoading] = useState(true);

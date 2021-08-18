@@ -58,7 +58,7 @@
 }
 
 .content h3 {
-    margin: 5px 0;
+    margin: 20px 0;
     font-size: 1.5rem;
     text-transform: capitalize;
 }
@@ -67,6 +67,7 @@
     color: var(--text-dark);
     opacity: 0.9;
     line-height: 25px;
+    text-transform: none;
 }
 
 .buttons {
@@ -97,6 +98,7 @@
     transition: all .3s ease;
     min-width: 80px;
     border-radius: 30px ;
+    font-size: 15px;
 }
 
 

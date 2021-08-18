@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { hideSpinner, showSpinner } from '../../../../redux/actions/modalSpinnerActions';
 import * as PageCompos from '../../../../Components/pageComponents';
-import OneOTLog from './OneOTLog/OneOTLog';
+import OneOTLog from './OneOTLog';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
@@ -43,7 +43,8 @@ const AllOTLogsEmployee = () => {
 				<thead>
 					<tr>
 						<th className={styles.workSummary}>Work summary</th>
-						<th className={styles.dateTime}>Date & Time</th>
+						<th className={styles.dateTime}>Date & Time Started</th>
+						<th className={styles.duration}>Duration (hours)</th>
 						<th className={styles.status}>Status</th>
 						<th className={styles.processor}>processor</th>
 						<th className={styles.processorComment}>Comment</th>

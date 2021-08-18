@@ -3,15 +3,13 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import FunctionButton from '../../FunctionButton/FunctionButton';
 
-import styles from '../../FormStyles.module.css';
-
 const AbsenceFormEmployee = (props) => {
 
 	const [formDetails, setFormDetails] = useState({
 		reason: '',
 		toDate: '',
 		fromDate: '',
-		pending: 'pending'
+		status: 'pending'
 	});
 
 	const employeeId = useSelector(state => state.auth.userId);
@@ -26,6 +24,7 @@ const AbsenceFormEmployee = (props) => {
 	}
 
 	const onInputChange = (e) => {
+		e.persist();
 		setFormDetails(prevDetails => {
 			return {
 				...prevDetails,
@@ -36,8 +35,8 @@ const AbsenceFormEmployee = (props) => {
 
 	return (
 		<React.Fragment>
-			<form onSubmit={formSubmitHandler} className={styles.form} >
-				<div className={styles.formInput}>
+			<form onSubmit={formSubmitHandler} className="form" >
+				<div className="formInput">
 					<label htmlFor="reason">Reason</label>
 					<input type="text" id="reason" name="reason"
 						value={formDetails.reason}
@@ -46,7 +45,7 @@ const AbsenceFormEmployee = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="fromDate">From </label>
 					<input type="date" id="fromDate" name="fromDate"
 						value={formDetails.fromDate}
@@ -56,7 +55,7 @@ const AbsenceFormEmployee = (props) => {
 						required
 					/>
 				</div>
-				<div className={styles.formInput}>
+				<div className="formInput">
 					<label htmlFor="toDate">To</label>
 					<input type="date" id="toDate" name="toDate"
 						value={formDetails.toDate}
@@ -65,10 +64,6 @@ const AbsenceFormEmployee = (props) => {
 						required
 					/>
 				</div>
-
-				{/* <div className={styles.buttons}>
-					<button className={styles.saveButton}>Submit</button>
-				</div> */}
 
 				<FunctionButton action='add' />
 			</form>

@@ -1,0 +1,16 @@
+.employeeTypeSelect {
+  width: 100% !important;
+}
+
+.employeeTypeSelect label {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+@media (min-width: 1400px) {
+  .container {
+      width: var(--max-page-main-content-width);
+      margin: 0 auto;
+  }
+
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { hideSpinner, showSpinner } from '../../../../redux/actions/actionCreators';
 import { useDispatch, useSelector } from 'react-redux';
 import * as PageCompos from '../../../../Components/pageComponents';
-import OneAbsenceRequestEmployee from './OneAbsenceRequestEmployee/OneAbsenceRequestEmployee';
+import OneAbsenceRequestEmployee from './OneAbsenceRequestEmployee';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
