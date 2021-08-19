@@ -6,6 +6,7 @@ const AbsenceFormAdmin = (props) => {
 	const processorId = useSelector(state => state.auth.userId);
 	const processorEmail = useSelector(state => state.auth.userDetails.email);
 	const [isInputsDisabled, setIsInputDisabled] = useState(false);
+	const [formErrors, setFormErrors] = useState({});
 	const [formDetails, setFormDetails] = useState(props.requestDetails || {
 		employeeEmail: '',
 		reason: '',
@@ -24,10 +25,11 @@ const AbsenceFormAdmin = (props) => {
 
 	const onInputChange = (e) => {
 		e.persist();
+		const target = e.target;
 		setFormDetails(prevDetails => {
 			return {
 				...prevDetails,
-				[e.target.name]: e.target.value
+				[target.name]: target.value
 			}
 		})
 	}
@@ -35,10 +37,28 @@ const AbsenceFormAdmin = (props) => {
 
 	const formSubmitHandler = (e) => {
 		e.preventDefault();
+		if (formDetails.employeeEmail === processorEmail && formDetails.status !== 'pending') {
+			setFormErrors(prevErrors => {
+				return {
+					...prevErrors,
+					status: 'You cannot Approve/Deny your own request'
+				}
+			})
+		}
+
+		if (formDetails.employeeEmail === processorEmail && formDetails.processorComment) {
+			setFormErrors(prevErrors => {
+				return {
+					...prevErrors,
+					processorComment: 'You cannot comment on your own request'
+				}
+			})
+			return;
+		}
+
+		setFormErrors({});
 		props.onSubmitHandler(formDetails);
 	}
-
-
 
 	return (
 		<React.Fragment>
@@ -46,7 +66,7 @@ const AbsenceFormAdmin = (props) => {
 				<div className="formInput">
 					<label htmlFor="email">Employee Email</label>
 					<input type="text" id="email" name="employeeEmail"
-						value={formDetails.employeeEmail}
+						value={formDetails.employeeEmail || ''}
 						placeholder="lastname.firstname@company.com"
 						title="Must be in format emailadress@domain.abc"
 						pattern="^[a-z0-9.]+@[a-z0-9.-]+\.[a-z]{2,4}$"
@@ -95,6 +115,7 @@ const AbsenceFormAdmin = (props) => {
 						<option value="approved">approved</option>
 						<option value="denied">denied</option>
 					</select>
+					<p className="fieldError">{formErrors.status}</p>
 				</div>
 
 				<div className="formInput">
@@ -114,6 +135,7 @@ const AbsenceFormAdmin = (props) => {
 						onChange={onInputChange}
 						disabled={isInputsDisabled}
 						value={formDetails.processorComment} />
+					<p className="fieldError">{formErrors.processorComment}</p>
 				</div>
 
 				<FunctionButton

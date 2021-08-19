@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout, CustomTable } from '../../../../Components';
 import {
 	getUserAssociatedWithEmail,
 	camelCaseToRegularString,
@@ -259,7 +259,7 @@ const SalaryPayout = () => {
 
 
 	return (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="Salary Payout"
 			description="Review and confirm monthly salary payout for employees."
 			applyMaxWidth={true}>
@@ -301,7 +301,7 @@ const SalaryPayout = () => {
 
 			{finalAmounts && (
 				<div className={styles.amountTables}>
-					<PageCompos.CustomTable>
+					<CustomTable>
 						<thead>
 							<tr>
 								<th align="left" className={styles.section}>Section</th>
@@ -311,13 +311,13 @@ const SalaryPayout = () => {
 						<tbody>
 							{getFinalAmountsToDisplay()}
 						</tbody>
-					</PageCompos.CustomTable>
+					</CustomTable>
 
 					<FunctionButton action='add' saveButtonText="Payout" onClick={payoutHandler} />
 				</div>
 			)}
 
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 	);
 }
 

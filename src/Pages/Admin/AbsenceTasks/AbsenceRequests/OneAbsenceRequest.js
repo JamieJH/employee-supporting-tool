@@ -15,6 +15,7 @@ const OneAbsenceRequest = (props) => {
 	const [processor, setProcessor] = useState(null);
 	const currentAdminId = useSelector(state => state.auth.userId);
 	const currentAdminName = useSelector(state => state.auth.userDetails.fullName);
+	const currentAdminEmail = useSelector(state => state.auth.userDetails.email);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -33,11 +34,11 @@ const OneAbsenceRequest = (props) => {
 						return snapshot.val();
 					})
 				})
-				.then(([useDetails, processorName]) => {
+				.then(([userDetails, processorName]) => {
 					setUserDetails({
-						fullName: useDetails.fullName,
-						email: useDetails.email,
-						image: useDetails.image
+						fullName: userDetails.fullName,
+						email: userDetails.email,
+						image: userDetails.image,
 					});
 					setProcessor(processorName);
 				})
@@ -73,11 +74,20 @@ const OneAbsenceRequest = (props) => {
 	}
 
 	const onClickProcessButtonHandler = (action) => {
-		dispatch(openModal({
-			type: "warning",
-			content: "Are you sure you want to approve/deny absence request?",
-			okButtonHandler: () => processRequestHandler(action),
-		}))
+		if (userDetails.email === currentAdminEmail) {
+			dispatch(openModal({
+				type: "error",
+				title: "Not allowed",
+				content: "You are not allowed to Approve/Deny your own request",
+			}))
+		}
+		else {
+			dispatch(openModal({
+				type: "warning",
+				content: "Are you sure you want to approve/deny absence request?",
+				okButtonHandler: () => processRequestHandler(action),
+			}))
+		}
 	}
 
 	const details = props.details;

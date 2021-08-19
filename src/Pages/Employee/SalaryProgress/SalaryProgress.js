@@ -3,7 +3,7 @@ import { Line } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
 import { hideSpinner, openModal, showSpinner } from '../../../redux/actions/actionCreators';
 import { camelCaseToRegularString, addCommasToNumber, getOTHoursInTimePeriod, getApprovedAbsenceDaysCurrentYear } from '../../../utils/commonMethods';
-import * as PageCompos from '../../../Components/pageComponents';
+import { MainContentLayout, CustomTable } from '../../../Components';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
@@ -177,7 +177,7 @@ const SalaryProgress = () => {
 
 	return salaryHistory && (
 
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title='Salary Progress'
 			description='See salary history of the most recent 12 months and review current month/year progress'
 			applyMaxWidth={true}>
@@ -189,7 +189,7 @@ const SalaryProgress = () => {
 			<div className={styles.progress}>
 				<h3>Current progress</h3>
 
-				<PageCompos.CustomTable>
+				<CustomTable>
 					<thead>
 						<tr>
 							<th align="left" className={styles.section}>Section</th>
@@ -199,11 +199,11 @@ const SalaryProgress = () => {
 					<tbody>
 						{showProgressData()}
 					</tbody>
-				</PageCompos.CustomTable>
+				</CustomTable>
 			</div>
 
 
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 
 	);
 }

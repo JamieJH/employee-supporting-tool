@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout } from '../../../../Components';
 import AbsenceFormAdmin from '../../../../Containers/AbsenceForm/AbsenceFormAdmin/AbsenceFormAdmin';
 import { getUserAssociatedWithId } from '../../../../utils/commonMethods';
 import { hideSpinner, openModal, showSpinner } from '../../../../redux/actions/actionCreators';
@@ -95,7 +95,7 @@ const EditAbsenceRequest = (props) => {
 
 
 	return requestDetails && (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="Edit Request"
 			description="Edit absence duration and its status">
 			<AbsenceFormAdmin
@@ -103,7 +103,7 @@ const EditAbsenceRequest = (props) => {
 				requestDetails={requestDetails}
 				onSubmitHandler={editAbsenceRequestHandler}
 			/>
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 	);
 }
 

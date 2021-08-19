@@ -1,7 +1,7 @@
 import React from 'react';
 import uuid from 'uuid-random';
 import OTForm, { uploadFilesToHost } from '../../../../Containers/OTForm/OTForm';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout } from '../../../../Components';
 import { useDispatch, useSelector } from 'react-redux';
 import { openModal, showSpinner } from '../../../../redux/actions/modalSpinnerActions';
 import { useLogOT } from '../../../../utils/customHooks';
@@ -33,16 +33,17 @@ const LogOTEmployee = () => {
 	}
 
 	return (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="Log OT"
 			description="Log OT work for processing.">
 			<OTForm
 				role="employee"
+				currentUserEmail={employeeEmail}
 				onSubmitHandler={onSubmitHandler}
 				initialValues={{
 					employeeEmail: employeeEmail
 				}} />
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 	);
 
 }

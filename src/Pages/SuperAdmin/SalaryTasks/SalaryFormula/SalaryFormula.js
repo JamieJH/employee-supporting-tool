@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MainContentLayout } from '../../../../Components';
 import FreshserFormulaForm from '../../../../Containers/SalaryFormulaForms/FresherFormulaForm';
 import ProbationFormulaForm from '../../../../Containers/SalaryFormulaForms/ProbationFormulaForm';
 import OfficialFormulaForm from '../../../../Containers/SalaryFormulaForms/OfficialFormulaForm';
@@ -96,34 +97,40 @@ const SalaryFormula = () => {
 	}
 
 	return formulas && (
-		<div className={styles.container}>
-			<div className={classNames("formInput", styles.employeeTypeSelect)}>
-				<label htmlFor="employeeType">select employee type</label>
-				<select id="employeeType" value={employeType} onChange={onEmployeeTypeChange} >
-					<option value="fresher">fresher</option>
-					<option value="probation">probation</option>
-					<option value="official">official</option>
-				</select>
-			</div>
+		<MainContentLayout
+			title="Salary Formula"
+			description="Review, and edit salary formula for each type of employee (Fresher, Probation, and Official)"
+			applyMaxWidth={true}>
+
+			<div className={styles.container}>
+				<div className={classNames("formInput", styles.employeeTypeSelect)}>
+					<label htmlFor="employeeType">select employee type</label>
+					<select id="employeeType" value={employeType} onChange={onEmployeeTypeChange} >
+						<option value="fresher">fresher</option>
+						<option value="probation">probation</option>
+						<option value="official">official</option>
+					</select>
+				</div>
 
 
-			<h3>Salary Formula</h3>
-			{
-				FormulaForm &&
-				<FormulaForm.Component
-					formula={FormulaForm.formula}
-					isInputsDisabled={isInputsDisabled}
-					saveEditHandler={saveEditHandler}>
-
-					<FunctionButton
-						action='edit'
+				<h3>Salary Formula</h3>
+				{
+					FormulaForm &&
+					<FormulaForm.Component
+						formula={FormulaForm.formula}
 						isInputsDisabled={isInputsDisabled}
-						enabledInputs={() => setIsInputsDisabled(false)}
-					/>
-				</FormulaForm.Component>
-			}
+						saveEditHandler={saveEditHandler}>
 
-		</div>
+						<FunctionButton
+							action='edit'
+							isInputsDisabled={isInputsDisabled}
+							enabledInputs={() => setIsInputsDisabled(false)}
+						/>
+					</FormulaForm.Component>
+				}
+
+			</div>
+		</MainContentLayout>
 	);
 }
 

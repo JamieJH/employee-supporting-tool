@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import OTFormAdmin from '../../../../Containers/OTForm/OTFormAdmin';
 import { uploadFilesToHost } from '../../../../Containers/OTForm/OTForm';
 import { getUserAssociatedWithEmail } from '../../../../utils/commonMethods';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout } from '../../../../Components/index';
 import { useLogOT } from '../../../../utils/customHooks';
 
 const LogOTEmployee = () => {
@@ -55,15 +55,16 @@ const LogOTEmployee = () => {
 
 
 	return (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="Log OT"
 			description="Log OT work for an employee.">
 			<OTFormAdmin
 				action="add"
+				currentUserEmail={processorEmail}
 				initialValues={initialValues}
 				onSubmitHandler={onSubmitHandler} />
 
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 
 	);
 

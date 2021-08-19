@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import * as PageCompos from '../../../Components/pageComponents';
+import React, { useEffect, useState } from 'react';
+import { MainContentLayout } from '../../../Components';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { showSpinner, hideSpinner } from '../../../redux/actions/actionCreators';
@@ -72,7 +72,7 @@ const WorkCalendar = () => {
   }
 
   return (
-    <PageCompos.MainContentLayout
+    <MainContentLayout
       title='Work Calendar'
       description='See Absence Days, OT logged on your work calendar'
       applyMaxWidth={true}>
@@ -98,7 +98,7 @@ const WorkCalendar = () => {
 
       </div>
 
-    </PageCompos.MainContentLayout>
+    </MainContentLayout>
   );
 }
 

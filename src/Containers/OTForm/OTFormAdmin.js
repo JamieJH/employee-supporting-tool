@@ -33,12 +33,13 @@ const OTFormAdmin = (props) => {
 			<OTForm
 				role='admin'
 				action={props.action}
+				currentUserEmail={props.currentUserEmail}
 				initialValues={props.initialValues}
 				onSubmitHandler={onSubmitHandler}
 				toggleAdminInputDisabled={setInputsDiabled}
 				>
 				<Field name="status">
-					{({ input }) => (
+					{({ input, meta }) => (
 						<div className="formInput">
 							<label htmlFor="status">status</label>
 							<select id="status" disabled={props.action === 'edit' && isInputsDisabled} {...input}>
@@ -46,14 +47,16 @@ const OTFormAdmin = (props) => {
 								<option value="approved">approved</option>
 								<option value="denied">denied</option>
 							</select>
+							{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 						</div>
 					)}
 				</Field>
 				<Field name="processorComment">
-					{({ input }) => (
+					{({ input, meta }) => (
 						<div className="formInput">
 							<label htmlFor="processor-comment">processor comment</label>
 							<textarea id="processor-comment" disabled={props.action === 'edit' && isInputsDisabled} {...input} />
+							{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 						</div>
 					)}
 				</Field>
