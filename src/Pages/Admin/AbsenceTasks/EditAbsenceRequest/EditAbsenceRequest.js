@@ -107,8 +107,4 @@ const EditAbsenceRequest = (props) => {
 	);
 }
 
-EditAbsenceRequest.propTypes = {
-
-}
-
 export default EditAbsenceRequest;

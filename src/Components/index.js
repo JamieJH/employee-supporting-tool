@@ -8,12 +8,13 @@ import NavItem from './NavItem/NavItem';
 import MainContentLayout from './MainContentLayout/MainContentLayout';
 import AddDataButton from './AddDataButton/AddDataButton';
 import CustomTable from './CustomTable/CustomTable';
-
+import Spinner from './Spinner/Spinner';
+import Modal from './Modal/Modal';
 import IconButton from './IconButton/IconButton';
 import AvatarNameEmail from './AvatarNameEmail/AvatarNameEmail';
 
 export {
     Avatar, AvatarNameEmail, Layout, Sidebar, Headbar,
     Menu, NavItem, AddDataButton, IconButton,
-    MainContentLayout, CustomTable
+    MainContentLayout, CustomTable, Spinner, Modal
 }

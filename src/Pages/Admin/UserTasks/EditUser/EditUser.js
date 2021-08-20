@@ -3,7 +3,7 @@ import { hideSpinner, openModal, showSpinner } from '../../../../redux/actions/a
 import { MainContentLayout } from '../../../../Components/index';
 import UserDetailsForm from '../../../../Containers/UserDetailsForm/UserDetailsForm';
 import { uploadImageAndGetURL } from '../../../../utils/commonMethods'
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import 'firebase/database';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';

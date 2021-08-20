@@ -70,7 +70,7 @@ const OneOTLogAdmin = (props) => {
 	const details = props.details;
 
 	return !employeeInfo
-		? <tr><td></td></tr>
+		? <tr><td colSpan='6'></td></tr>
 		: <React.Fragment>
 			<tr>
 				<td>
@@ -87,13 +87,13 @@ const OneOTLogAdmin = (props) => {
 				<td align="center">
 					{details.duration}
 				</td>
-				<td>{details.workSummary}</td>
+				<td className="longtext">{details.workSummary}</td>
 				<td data-status={status}>
 					{status}
 				</td>
 				<td align="center" style={{ whiteSpace: 'nowrap' }}>
 					<Link to={`/edit-ot/${details.id}`}>
-						<IconButton fontAwesomeCode="fas fa-eye" type="info" title="edit details" />
+						<IconButton fontAwesomeCode="fas fa-info" type="info" title="edit details" />
 					</Link>
 
 					{status === 'pending' &&

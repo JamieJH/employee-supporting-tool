@@ -83,7 +83,7 @@ const Modal = () => {
 		: <React.Fragment>
 			{/* <Backdrop /> */}
 			<div className='backdrop'>
-				<div className={styles.container}>
+				<div className="modalContainer">
 					<div className={classNames(styles.head, styles[modalDetails.type])}>
 						{getTitleToDisplay()}
 						<button className={styles.closeButton} onClick={closeModalHandler}>

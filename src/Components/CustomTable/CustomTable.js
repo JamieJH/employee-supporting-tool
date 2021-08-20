@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styles from './CustomTable.module.css';
 
@@ -21,5 +22,9 @@ const CustomTable = (props) => {
 // 		return <SubComponent key={item.id} details={item} />;
 // 	})
 // }
+
+CustomTable.propTypes = {
+	children: PropTypes.array.isRequired
+};
 
 export default CustomTable;

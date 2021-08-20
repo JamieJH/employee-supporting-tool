@@ -6,6 +6,7 @@ import firebase from "firebase/app";
 import 'firebase/database';
 import 'firebase/storage';
 import FunctionButton from '../FunctionButton/FunctionButton';
+import PropTypes from 'prop-types';
 
 
 const OTForm = (props) => {
@@ -108,8 +109,6 @@ const OTForm = (props) => {
 			}
 		}
 
-		console.log(errors);
-
 		return errors;
 	}
 
@@ -171,7 +170,8 @@ const OTForm = (props) => {
 						{({ input, meta }) => (
 							<div className="formInput">
 								<label htmlFor="work-summary">Work Summary</label>
-								<textarea id="work-summary" disabled={isInputsDisabled} {...input} rows="3" />
+								<textarea id="work-summary" disabled={isInputsDisabled} {...input} maxLength='250' rows="3" />
+								<p className="inputFootnote">Max 250 characters</p>
 								{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 							</div>
 						)}
@@ -214,7 +214,7 @@ export const uploadFilesToHost = (logId, files) => {
 
 	return uploadMultipleFilesAndGetURLs(files, filesNames)
 		.then(results => {
-			console.log(results);
+			// console.log(results);
 			for (const result of results) {
 				if (!result) {
 					hasError = true;
@@ -246,6 +246,15 @@ export const saveOTLogDetails = (logId, logDetails) => {
 	return firebase.database().ref('/ot-logs/' + logId).set(logDetails)
 }
 
+OTForm.propTypes = {
+	children: PropTypes.array,
+	role: PropTypes.string,
+	action:  PropTypes.string,
+	toggleAdminInputDisabled: PropTypes.func,
+	currentUserEmail: PropTypes.string,
+	onSubmitHandler: PropTypes.func.isRequired,
+	initialValues: PropTypes.object
+};
 
 
 export default OTForm;

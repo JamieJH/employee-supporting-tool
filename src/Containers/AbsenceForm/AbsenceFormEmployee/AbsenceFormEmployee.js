@@ -2,9 +2,9 @@ import React from 'react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import FunctionButton from '../../FunctionButton/FunctionButton';
+import PropTypes from 'prop-types';
 
 const AbsenceFormEmployee = (props) => {
-
 	const [formDetails, setFormDetails] = useState({
 		reason: '',
 		toDate: '',
@@ -38,12 +38,14 @@ const AbsenceFormEmployee = (props) => {
 			<form onSubmit={formSubmitHandler} className="form" >
 				<div className="formInput">
 					<label htmlFor="reason">Reason</label>
-					<input type="text" id="reason" name="reason"
+					<textarea type="text" id="reason" name="reason"
 						value={formDetails.reason}
 						placeholder="Example: high fever, got in accident and now in hospital,..."
 						onChange={onInputChange}
+						maxLength='250'
 						required
 					/>
+					<p className="inputFootnote">Max 250 characters</p>
 				</div>
 				<div className="formInput">
 					<label htmlFor="fromDate">From </label>
@@ -72,5 +74,8 @@ const AbsenceFormEmployee = (props) => {
 
 }
 
+AbsenceFormEmployee.propTypes = {
+	onSubmitHandler: PropTypes.func.isRequired
+};
 
 export default AbsenceFormEmployee;

@@ -23,7 +23,8 @@ IconButton.propTypes = {
 	// children: PropTypes.element.isRequired,
 	type: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
-	onClick: PropTypes.func
+	onClick: PropTypes.func,
+	fontAwesomeCode: PropTypes.string.isRequired
 }
 
 export default IconButton;

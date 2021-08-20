@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { inputDateToDateString, getUserAssociatedWithId } from '../../../../utils/commonMethods';
 import { OTLogDetailsPropTypes } from '../../../../utils/customPropTypes';
 import { AvatarNameEmail } from '../../../../Components/index';
-import { useState } from 'react';
 
 const OneOTLog = (props) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +25,7 @@ const OneOTLog = (props) => {
 	const details = props.details;
 
 	return isLoading
-		? <tr><td></td></tr>
+		? <tr><td colSpan='6'></td></tr>
 		: <React.Fragment>
 			<tr>
 				<td>{details.workSummary}</td>

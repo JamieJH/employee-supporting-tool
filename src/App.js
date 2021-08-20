@@ -10,18 +10,14 @@ import {
 	AllOTLogsEmployee, LogOTAdmin, LogOTEmployee, EditOTLog,
 	SalaryFormula, SalaryPayout, SalaryProgress, WorkCalendar
 } from './Pages/index';
-import Modal from './Components/Modal/Modal';
-import Spinner from './Components/Spinner/Spinner';
+import { Modal, Spinner } from './Components';
 
-import { closeModal, hideSpinner } from './redux/actions/modalSpinnerActions';
 const App = () => {
 	const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
 	const history = useHistory();
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		dispatch(hideSpinner());
-		dispatch(closeModal());
 		if (!isLoggedIn) {
 			history.replace('/login');
 		}

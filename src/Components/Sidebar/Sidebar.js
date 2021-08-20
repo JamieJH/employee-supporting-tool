@@ -1,12 +1,13 @@
 import React, { useRef } from 'react';
 import classNames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { Avatar, NavItem } from '../index';
 import { logout } from '../../redux/actions/authActions';
-import AppLogo from '../../assets/logo.png';
+import AppLogo from '../AppLogo/AppLogo';
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import PropTypes from 'prop-types';
 
 import styles from './Sidebar.module.css';
 
@@ -29,7 +30,7 @@ const Sidebar = (props) => {
 
 	const logOutHandler = () => {
 		firebase.auth().signOut();
-		dispatch(logout);
+		dispatch(logout());
 		history.replace('/login');
 	}
 
@@ -42,20 +43,23 @@ const Sidebar = (props) => {
 			<div className={styles.head}>
 				<div className={styles.user}>
 					<div className={styles.avatar}>
-						<Avatar image={image} fullName={fullName} isCurrentUser='true' />
+						<Avatar image={image} fullName={fullName} isCurrentUser={true} />
 					</div>
 					<span>Hi, {fullName}</span>
 				</div>
 
 				<div className={styles.logo}>
-					<img src={AppLogo} alt="app logo" />
+					{/* <img src={AppLogo} alt="app logo" /> */}
+					<Link to="/">
+					<AppLogo size="40px" />
+				</Link>
 				</div>
 			</div>
 			<ul className={styles.navItems} onClick={closeSidebarHandler} ref={sidebarRef}>
 				{navItems.map(item => {
 					return <NavItem
 						key={item.title}
-						nav={item}
+						details={item}
 						isOpen={props.isOpen}></NavItem>
 				})}
 			</ul>
@@ -72,5 +76,9 @@ const Sidebar = (props) => {
 
 }
 
+Sidebar.propTypes = {
+	isOpen: PropTypes.bool.isRequired,
+	closeSidebarHandler: PropTypes.func.isRequired
+};
 
 export default Sidebar;

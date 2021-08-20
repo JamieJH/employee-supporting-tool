@@ -24,17 +24,7 @@ const pages = {
 		title: "All Users",
 		link: "/all-users",
 		icon: "fa-users",
-	},
-		// {
-		// 	title: "Absence Requests",
-		// 	link: "/absence-requests",
-		// 	icon: "fa-calendar-minus",
-		// }, {
-		// 	title: "OT Logs",
-		// 	link: "/ot-logs",
-		// 	icon: "fa-business-time",
-		// }
-	],
+	}],
 	superadmin: [{
 		title: "Salary Payout",
 		link: "/salary-payout",

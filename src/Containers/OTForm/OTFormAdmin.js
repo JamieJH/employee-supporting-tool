@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import OTForm from './OTForm';
 import { Field } from 'react-final-form';
+import PropTypes from 'prop-types';
 
 import styles from './OTForm.module.css';
 import classNames from 'classnames';
@@ -55,7 +56,8 @@ const OTFormAdmin = (props) => {
 					{({ input, meta }) => (
 						<div className="formInput">
 							<label htmlFor="processor-comment">processor comment</label>
-							<textarea id="processor-comment" disabled={props.action === 'edit' && isInputsDisabled} {...input} />
+							<textarea id="processor-comment" disabled={props.action === 'edit' && isInputsDisabled} maxLength='250' {...input} />
+							<p className="inputFootnote">Max 250 characters</p>
 							{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 						</div>
 					)}
@@ -78,5 +80,12 @@ const OTFormAdmin = (props) => {
 	);
 
 }
+
+OTFormAdmin.propTypes = {
+	action:  PropTypes.string.isRequired,
+	currentUserEmail: PropTypes.string,
+	onSubmitHandler: PropTypes.func.isRequired,
+	initialValues: PropTypes.object
+};
 
 export default OTFormAdmin;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import FunctionButton from '../../FunctionButton/FunctionButton';
+import PropTypes from 'prop-types';
 
 const AbsenceFormAdmin = (props) => {
 	const processorId = useSelector(state => state.auth.userId);
@@ -77,13 +78,15 @@ const AbsenceFormAdmin = (props) => {
 				</div>
 				<div className="formInput">
 					<label htmlFor="reason">Reason</label>
-					<input type="text" id="reason" name="reason"
+					<textarea type="text" id="reason" name="reason"
 						value={formDetails.reason}
 						placeholder="Example: high fever, got in accident and now in hospital,..."
 						onChange={onInputChange}
 						disabled={isInputsDisabled}
+						maxLength='250'
 						required
 					/>
+					<p className="inputFootnote">Max 250 characters</p>
 				</div>
 				<div className="formInput">
 					<label htmlFor="fromDate">From </label>
@@ -117,6 +120,19 @@ const AbsenceFormAdmin = (props) => {
 					</select>
 					<p className="fieldError">{formErrors.status}</p>
 				</div>
+				
+				<div className="formInput">
+					<label htmlFor="processorComment">processor comment</label>
+					<textarea type="text" id="processorComment" name="processorComment"
+						placeholder="Example: reason for denial, encouragement, etc"
+						onChange={onInputChange}
+						disabled={isInputsDisabled}
+						value={formDetails.processorComment}
+						maxLength='250'
+					/>
+					<p className="inputFootnote">Max 250 characters</p>
+					<p className="fieldError">{formErrors.processorComment}</p>
+				</div>
 
 				<div className="formInput">
 					<label htmlFor="processor-id">Processor</label>
@@ -127,15 +143,6 @@ const AbsenceFormAdmin = (props) => {
 					<p className="inputFootnote">
 						Adding request or changing its original details will list you as the Processor.
 					</p>
-				</div>
-				<div className="formInput">
-					<label htmlFor="processorComment">processor comment</label>
-					<input type="text" id="processorComment" name="processorComment"
-						placeholder="Example: reason for denial, encouragement, etc"
-						onChange={onInputChange}
-						disabled={isInputsDisabled}
-						value={formDetails.processorComment} />
-					<p className="fieldError">{formErrors.processorComment}</p>
 				</div>
 
 				<FunctionButton
@@ -148,5 +155,10 @@ const AbsenceFormAdmin = (props) => {
 
 }
 
+AbsenceFormAdmin.propTypes = {
+	action: PropTypes.string.isRequired,
+	requestDetails: PropTypes.object,
+	onSubmitHandler: PropTypes.func.isRequired
+};
 
 export default AbsenceFormAdmin;

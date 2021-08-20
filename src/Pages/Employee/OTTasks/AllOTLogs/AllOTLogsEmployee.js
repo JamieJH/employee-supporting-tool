@@ -37,8 +37,8 @@ const AllOTLogsEmployee = () => {
 
 	return (logs) && (
 		<MainContentLayout
-			title="Absent Requests"
-			description="Review all absence requests you have made.">
+			title="OT Logs"
+			description="Review the status of all logs you have made.">
 			<AddDataButton title="Log OT" path="/log-ot" />
 			<CustomTablePaginate items={logs} oneItemComponent={OneOTLog} maxCol={6}>
 				<th className={styles.workSummary}>Work summary</th>

@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Avatar.module.css';
+import PropTypes from 'prop-types';
 
 const Avatar = (props) => {
 
@@ -24,5 +25,10 @@ const Avatar = (props) => {
 	return getImageToDisplay();
 }
 
+Avatar.propTypes = {
+	fullName: PropTypes.string.isRequired,
+	isCurrentUser: PropTypes.bool,
+	image: PropTypes.string 
+};
 
 export default Avatar;

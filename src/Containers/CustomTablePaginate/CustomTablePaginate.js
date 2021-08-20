@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { CustomTable } from '../../Components';
+import PropTypes from 'prop-types';
 
 import styles from './CustomTablePaginate.module.css';
 
@@ -16,7 +17,6 @@ const CustomTablePaginate = (props) => {
   const handlePageClick = ({ selected: selectedPage }) => {
     setCurrentPage(selectedPage)
   }
-
 
   const currentPageData = (offset) => {
     if (allItems && allItems.length === 0) {
@@ -33,8 +33,8 @@ const CustomTablePaginate = (props) => {
       // fill up remaining spaces if available (for aesthetic purpose)
       if (currentPageItems.length < PER_PAGE) {
         Array(PER_PAGE - currentPageItems.length).fill(0).forEach((_, index) => {
-          const rowFiller = Array(props.maxCol).fill(0).map((_, index) => <td key={index}></td>);
-          tablePageData.push(<tr key={index}>{rowFiller}</tr>);
+          // const rowFiller = Array(props.maxCol).fill(0).map((_, index) => <td key={index}></td>);
+          tablePageData.push(<tr key={index}><td colSpan={props.maxCol}></td></tr>);
         })
       }
 
@@ -74,5 +74,12 @@ const CustomTablePaginate = (props) => {
     </React.Fragment>
   );
 }
+
+CustomTablePaginate.propTypes = {
+	children: PropTypes.array.isRequired,
+	items: PropTypes.array,
+	oneItemComponent: PropTypes.elementType,
+	maxCol: PropTypes.number,
+};
 
 export default CustomTablePaginate;

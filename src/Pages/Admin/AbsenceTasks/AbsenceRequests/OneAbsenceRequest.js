@@ -93,7 +93,7 @@ const OneAbsenceRequest = (props) => {
 	const details = props.details;
 
 	return !userDetails
-		? <tr><td></td></tr>
+		? <tr><td colSpan='6'></td></tr>
 		: <React.Fragment>
 			<tr>
 				<td>
@@ -106,14 +106,14 @@ const OneAbsenceRequest = (props) => {
 				<td align="center">
 					{inputDateToDateString(details.fromDate)} - {inputDateToDateString(details.toDate)}
 				</td>
-				<td>{details.reason}</td>
+				<td className="longtext">{details.reason}</td>
 				<td data-status={status}>{status}</td>
 				<td align="center">
 					{processor}
 				</td>
 				<td align="center" style={{ whiteSpace: "nowrap" }} >
 					<Link to={`/edit-request/${details.id}`}>
-						<IconButton fontAwesomeCode="fas fa-eye" type="info" title="edit details" />
+						<IconButton fontAwesomeCode="fas fa-info" type="info" title="edit details" />
 					</Link>
 
 					{status === 'pending' &&

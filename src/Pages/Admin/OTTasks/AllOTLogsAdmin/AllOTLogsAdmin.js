@@ -35,7 +35,7 @@ const AllOTLogsAdmin = () => {
 	return (logs) && (
 		<MainContentLayout
 			title="OT Logs"
-			description="Review the status of all logs you have made.">
+			description="Review, process, and edit OT logs.">
 			<AddDataButton title="Log OT" path="/log-ot" />
 			<CustomTablePaginate items={logs} oneItemComponent={OneOTLogAdmin} maxCol={6}>
 				<th className={styles.employee}>Employee</th>
