@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import Headbar from '../Headbar/Headbar';
 import Sidebar from '../Sidebar/Sidebar';
+import PropTypes from 'prop-types';
 
 import styles from './Layout.module.css';
 
@@ -27,5 +28,9 @@ const Layout = (props) => {
     </div>
   );
 }
+
+Layout.propTypes = {
+	children: PropTypes.element.isRequired
+};
 
 export default Layout

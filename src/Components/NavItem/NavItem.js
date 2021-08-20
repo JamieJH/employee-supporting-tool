@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 import styles from './NavItem.module.css';
 
 
 const NavItem = (props) => {
-	const navItem = props.nav;
+	const navItem = props.details;
 
 	const getLogoutButtonToDisplay = () => {
 		const className = classNames(styles.logoutButton, styles.navItem, { [styles.open]: props.isOpen });
@@ -33,5 +34,12 @@ const NavItem = (props) => {
 		);
 
 }
+
+NavItem.propTypes = {
+	details: PropTypes.object,
+	isOpen: PropTypes.bool.isRequired,
+	onClick: PropTypes.func,
+	isLogoutBtn: PropTypes.bool
+};
 
 export default NavItem;

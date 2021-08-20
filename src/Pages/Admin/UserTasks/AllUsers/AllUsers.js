@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { hideSpinner, showSpinner } from '../../../../redux/actions/actionCreators';
 import { useDispatch, useSelector } from 'react-redux';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout, AddDataButton } from '../../../../Components/index';
+import CustomTablePaginate from '../../../../Containers/CustomTablePaginate/CustomTablePaginate';
 import OneUser from './OneUser';
 import firebase from 'firebase/app';
 import 'firebase/database';
@@ -33,26 +34,19 @@ const AllUsers = () => {
 	}, [dispatch, role])
 
 	return (employees) && (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="Employee List"
 			description="Review, remove an employee">
-			<PageCompos.AddDataButton title="New User" path="/add-user" />
-			<PageCompos.CustomTable>
-				<thead>
-					<tr>
-						<th className={styles.name}>Name</th>
-						<th className={styles.role}>user type</th>
-						<th className={styles.employeeType}>employee Type</th>
-						<th className={styles.position}>Position</th>
-						<th className={styles.date}>Date Started</th>
-						<th className={styles.actions}>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{PageCompos.getListContentToDisplay(5, employees, OneUser)}
-				</tbody>
-			</PageCompos.CustomTable>
-		</PageCompos.MainContentLayout>
+			<AddDataButton title="New User" path="/add-user" />
+			<CustomTablePaginate items={employees} oneItemComponent={OneUser} maxCol={6}>
+				<th className={styles.name}>Name</th>
+				<th className={styles.role}>user type</th>
+				<th className={styles.employeeType}>employee Type</th>
+				<th className={styles.position}>Position</th>
+				<th className={styles.date}>Date Started</th>
+				<th className={styles.actions}>Actions</th>
+			</CustomTablePaginate>
+		</MainContentLayout>
 	);
 }
 

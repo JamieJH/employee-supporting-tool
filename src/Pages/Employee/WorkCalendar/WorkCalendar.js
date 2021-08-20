@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import * as PageCompos from '../../../Components/pageComponents';
+import React, { useEffect, useState } from 'react';
+import { MainContentLayout } from '../../../Components';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { showSpinner, hideSpinner } from '../../../redux/actions/actionCreators';
@@ -8,14 +8,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './WorkCalendar.module.css'
 import './FullCalendar.css';
+import EventDetailsModal from './EventDetailsModal';
 
 const WorkCalendar = () => {
 
   const [events, setEvents] = useState(null);
+  const [eventModal, setEventModal] = useState(null);
   const userId = useSelector(state => state.auth.userId);
   const dispatch = useDispatch();
-
-  // console.log(events);
 
   useEffect(() => {
     dispatch(showSpinner());
@@ -29,15 +29,14 @@ const WorkCalendar = () => {
       .then(([absenceDays, otLogs]) => {
         const userEvents = [];
 
-        console.log(absenceDays, otLogs);
-
         absenceDays.forEach(absenceDay => {
           userEvents.push({
             id: absenceDay.id,
             start: absenceDay.fromDate,
             end: absenceDay.toDate,
             title: absenceDay.reason,
-            tooltipData: absenceDay.reason,
+            // tooltipData: absenceDay.reason,
+            type: 'absence',
             classNames: [styles.absenceDay, styles.tooltip]
           })
         })
@@ -55,7 +54,8 @@ const WorkCalendar = () => {
             start: startDateTime,
             end: endDateTime,
             title: log.workSummary,
-            tooltipData: `From: ${log.fromTime}, ${log.duration} hours - ${log.workSummary}`,
+            type: 'log',
+            // tooltipData: `From: ${log.fromTime}, ${log.duration} hours - ${log.workSummary}`,
             classNames: [styles.otLog, styles.tooltip]
           })
         })
@@ -71,8 +71,21 @@ const WorkCalendar = () => {
     info.el.setAttribute("data-tooltip", info.event.extendedProps.tooltipData);
   }
 
+  const onEventClick = (info) => {
+    setEventModal({
+      key: Math.random(),
+      type: info.event.extendedProps.type,
+      details: {
+        type: info.event.extendedProps.type,
+        start: info.event.startStr,
+        end: info.event.endStr,
+        content: info.event.title
+      }
+    })
+  }
+
   return (
-    <PageCompos.MainContentLayout
+    <MainContentLayout
       title='Work Calendar'
       description='See Absence Days, OT logged on your work calendar'
       applyMaxWidth={true}>
@@ -81,6 +94,7 @@ const WorkCalendar = () => {
         initialView="dayGridMonth"
         initialEvents={events}
         eventDidMount={addTooltipData}
+        eventClick={onEventClick}
       />
       }
 
@@ -98,7 +112,8 @@ const WorkCalendar = () => {
 
       </div>
 
-    </PageCompos.MainContentLayout>
+      {eventModal && <EventDetailsModal {...eventModal}/>}
+    </MainContentLayout>
   );
 }
 

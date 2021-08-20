@@ -5,15 +5,14 @@ import FileInput from '../FileInput/FileInput';
 import firebase from "firebase/app";
 import 'firebase/database';
 import 'firebase/storage';
-import { useRef } from 'react';
 import FunctionButton from '../FunctionButton/FunctionButton';
+import PropTypes from 'prop-types';
 
 
 const OTForm = (props) => {
 	const [uploadedFiles, setUploadedFiles] = useState(null);
 	const [uploadFilesError, setUploadFilesError] = useState(null);
 	const [isInputsDisabled, setIsInputDisabled] = useState(false);
-	const emailRef = useRef();
 
 	useEffect(() => {
 		if (props.action === 'edit') {
@@ -68,7 +67,7 @@ const OTForm = (props) => {
 			if (props.role === 'admin') {
 				logDetails.employeeEmail = formData.employeeEmail;
 				logDetails.status = formData.status;
-				logDetails.processorComment = formData.processorComment;
+				logDetails.processorComment = formData.processorComment || '';
 			}
 			props.onSubmitHandler(logDetails, uploadedFiles);
 		}
@@ -82,7 +81,7 @@ const OTForm = (props) => {
 		}
 
 		if (formData.employeeEmail && !formData.employeeEmail.match(/^[a-z0-9.]+@[a-z0-9.-]+\.[a-z]{2,4}$/)) {
-			errors.employeeEmail = "Must be in format emailadress@domain.abc";
+			errors.employeeEmail = "Must be in format emailadress@domain.abc with no extra spaces";
 		}
 
 		if (!formData.date) {
@@ -99,6 +98,15 @@ const OTForm = (props) => {
 		}
 		if (!formData.workSummary) {
 			errors.workSummary = "Required";
+		}
+
+		if (props.role === 'admin' && formData.employeeEmail && formData.employeeEmail === props.currentUserEmail) {
+			if (formData.status !== 'pending') {
+				errors.status = "You cannot Approve/Deny your own request.";
+			}
+			if (formData.processorComment) {
+				errors.processorComment = "You cannot comment on you own request";
+			}
 		}
 
 		return errors;
@@ -126,7 +134,6 @@ const OTForm = (props) => {
 								<input type="text" id="employee-email"
 									placeholder="employeeemail@company.com"
 									disabled={props.action === 'edit' || props.role === 'employee'}
-									ref={emailRef}
 									{...input} />
 								{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 							</div>
@@ -163,7 +170,8 @@ const OTForm = (props) => {
 						{({ input, meta }) => (
 							<div className="formInput">
 								<label htmlFor="work-summary">Work Summary</label>
-								<textarea id="work-summary" disabled={isInputsDisabled} {...input} rows="3" />
+								<textarea id="work-summary" disabled={isInputsDisabled} {...input} maxLength='250' rows="3" />
+								<p className="inputFootnote">Max 250 characters</p>
 								{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 							</div>
 						)}
@@ -206,7 +214,7 @@ export const uploadFilesToHost = (logId, files) => {
 
 	return uploadMultipleFilesAndGetURLs(files, filesNames)
 		.then(results => {
-			console.log(results);
+			// console.log(results);
 			for (const result of results) {
 				if (!result) {
 					hasError = true;
@@ -238,6 +246,15 @@ export const saveOTLogDetails = (logId, logDetails) => {
 	return firebase.database().ref('/ot-logs/' + logId).set(logDetails)
 }
 
+OTForm.propTypes = {
+	children: PropTypes.array,
+	role: PropTypes.string,
+	action:  PropTypes.string,
+	toggleAdminInputDisabled: PropTypes.func,
+	currentUserEmail: PropTypes.string,
+	onSubmitHandler: PropTypes.func.isRequired,
+	initialValues: PropTypes.object
+};
 
 
 export default OTForm;

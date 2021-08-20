@@ -1,5 +1,5 @@
 import React from 'react';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout } from '../../../../Components';
 import AbsenceFormAdmin from '../../../../Containers/AbsenceForm/AbsenceFormAdmin/AbsenceFormAdmin';
 import { getUserAssociatedWithEmail } from '../../../../utils/commonMethods';
 import { openModal, showSpinner } from '../../../../redux/actions/actionCreators';
@@ -49,11 +49,11 @@ const AddAbsenceRequestAdmin = () => {
 
 
 	return (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="New Absence Request"
 			description="Create an absence request for an employee" >
 			<AbsenceFormAdmin action="add" onSubmitHandler={addAbsenceRequestHandler} />
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 	);
 }
 

@@ -13,6 +13,7 @@ const OneOTLogAdmin = (props) => {
 	const [status, setStatus] = useState(props.details.status);
 	const dispatch = useDispatch();
 	const currentAdminId = useSelector(state => state.auth.userId);
+	const currentAdminEmail = useSelector(state => state.auth.userDetails.email);
 
 	useEffect(() => {
 		getUserAssociatedWithId(props.details.employeeId)
@@ -50,17 +51,26 @@ const OneOTLogAdmin = (props) => {
 	}
 
 	const onClickProcessButtonHandler = (action) => {
-		dispatch(openModal({
-			type: "warning",
-			content: "Are you sure you want to approve/deny this OT log?",
-			okButtonHandler: () => processRequestHandler(action),
-		}))
+		if (employeeInfo.email === currentAdminEmail) {
+			dispatch(openModal({
+				type: "error",
+				title: "Not allowed",
+				content: "You are not allowed to Approve/Deny your own log",
+			}))
+		}
+		else {
+			dispatch(openModal({
+				type: "warning",
+				content: "Are you sure you want to approve/deny this OT log?",
+				okButtonHandler: () => processRequestHandler(action),
+			}))
+		}
 	}
 
 	const details = props.details;
 
 	return !employeeInfo
-		? <tr><td></td></tr>
+		? <tr><td colSpan='6'></td></tr>
 		: <React.Fragment>
 			<tr>
 				<td>
@@ -77,13 +87,13 @@ const OneOTLogAdmin = (props) => {
 				<td align="center">
 					{details.duration}
 				</td>
-				<td>{details.workSummary}</td>
+				<td className="longtext">{details.workSummary}</td>
 				<td data-status={status}>
 					{status}
 				</td>
 				<td align="center" style={{ whiteSpace: 'nowrap' }}>
 					<Link to={`/edit-ot/${details.id}`}>
-						<IconButton fontAwesomeCode="fas fa-eye" type="info" title="edit details" />
+						<IconButton fontAwesomeCode="fas fa-info" type="info" title="edit details" />
 					</Link>
 
 					{status === 'pending' &&

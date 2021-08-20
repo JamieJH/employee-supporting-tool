@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { hideSpinner, showSpinner } from '../../../../redux/actions/actionCreators';
 import { useDispatch, useSelector } from 'react-redux';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout, AddDataButton } from '../../../../Components';
+import CustomTablePaginate from '../../../../Containers/CustomTablePaginate/CustomTablePaginate';
 import OneAbsenceRequestEmployee from './OneAbsenceRequestEmployee';
 import firebase from 'firebase/app';
 import 'firebase/database';
@@ -33,25 +34,18 @@ const AbsenceRequestsEmployee = () => {
 	}, [employeeId, dispatch])
 
 	return (requests) && (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="Absent Requests"
 			description="Review all absence requests you have made.">
-			<PageCompos.AddDataButton title="New Request" path="/new-request" />
-			<PageCompos.CustomTable>
-				<thead>
-					<tr>
-						<th className={styles.reason}>Reason</th>
-						<th className={styles.duration}>duration</th>
-						<th className={styles.status}>Status</th>
-						<th className={styles.processor}>processor</th>
-						<th className={styles.processorComment}>Comment</th>
-					</tr>
-				</thead>
-				<tbody>
-					{PageCompos.getListContentToDisplay(5, requests, OneAbsenceRequestEmployee)}
-				</tbody>
-			</PageCompos.CustomTable>
-		</PageCompos.MainContentLayout>
+			<AddDataButton title="New Request" path="/new-request" />
+			<CustomTablePaginate items={requests} oneItemComponent={OneAbsenceRequestEmployee} maxCol={5}>
+				<th className={styles.reason}>Reason</th>
+				<th className={styles.duration}>duration</th>
+				<th className={styles.status}>Status</th>
+				<th className={styles.processor}>processor</th>
+				<th className={styles.processorComment}>Comment</th>
+			</CustomTablePaginate>
+		</MainContentLayout>
 	);
 
 }

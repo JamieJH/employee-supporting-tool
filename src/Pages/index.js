@@ -3,7 +3,7 @@ import React from 'react';
 import Login from './Entry/Login/Login';
 
 import WorkCalendar from './Employee/WorkCalendar/WorkCalendar';
-import AllUsers from './Admin/UserTasks/AllUsers/AllUsers';
+const AllUsers = React.lazy(() => import('./Admin/UserTasks/AllUsers/AllUsers'));
 const AddUser = React.lazy(() => import('./Admin/UserTasks/AddUser/AddUser'));
 const EditUser = React.lazy(() => import('./Admin/UserTasks/EditUser/EditUser'));
 const AbsenceRequestsAdmin = React.lazy(() => import('./Admin/AbsenceTasks/AbsenceRequests/AbsenceRequestsAdmin'));

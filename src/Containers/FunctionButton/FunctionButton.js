@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styles from './FunctionButton.module.css';
 
@@ -23,5 +24,13 @@ const FunctionButton = (props) => {
   )
 
 }
+
+FunctionButton.propTypes = {
+  saveButtonText: PropTypes.string,
+	onClick: PropTypes.func,
+	isInputsDisabled: PropTypes.bool,
+	action: PropTypes.string,
+	enabledInputs: PropTypes.func,
+};
 
 export default FunctionButton;

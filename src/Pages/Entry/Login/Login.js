@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { hideSpinner, showSpinner, login } from '../../../redux/actions/actionCreators';
 import { useDispatch } from 'react-redux';
-import Logo from '../../../assets/logo.png';
+import AppLogo from '../../../Components/AppLogo/AppLogo';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
@@ -17,7 +17,7 @@ const Login = () => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 
-	dispatch(hideSpinner());
+	// dispatch(hideSpinner());
 
 	const logginHandler = async (e) => {
 		e.preventDefault();
@@ -92,7 +92,8 @@ const Login = () => {
 			}
 			<div className={styles.formContainer}>
 				<div className={styles.logo}>
-					<img src={Logo} alt="" />
+					{/* <img src={Logo} alt="" /> */}
+					<AppLogo size="64px" />
 				</div>
 				<h2>Login</h2>
 				<form className={styles.form}>

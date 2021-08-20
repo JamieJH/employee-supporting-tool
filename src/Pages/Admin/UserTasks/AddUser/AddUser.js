@@ -2,7 +2,7 @@ import React from 'react';
 import { openModal, showSpinner } from '../../../../redux/actions/actionCreators';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout } from '../../../../Components/index';
 import UserDetailsForm from '../../../../Containers/UserDetailsForm/UserDetailsForm';
 import { uploadImageAndGetURL } from '../../../../utils/commonMethods'
 import firebase from 'firebase/app';
@@ -72,11 +72,11 @@ const AddUser = () => {
 	}
 
 	return (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="Add New User"
 			description="Add a user account for an employee">
 			<UserDetailsForm action="add" onSubmitHandler={formSubmitHandler} />
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 	);
 
 }

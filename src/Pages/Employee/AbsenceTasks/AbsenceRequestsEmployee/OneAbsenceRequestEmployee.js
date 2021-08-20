@@ -26,7 +26,7 @@ const OneAbsenceRequestEmployee = (props) => {
 	const details = props.details;
 
 	return isLoading
-		? <tr><td></td></tr>
+		? <tr><td colSpan='5'></td></tr>
 		: <React.Fragment>
 			<tr>
 				<td>{details.reason}</td>

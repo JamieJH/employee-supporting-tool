@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import OTForm from './OTForm';
 import { Field } from 'react-final-form';
+import PropTypes from 'prop-types';
 
 import styles from './OTForm.module.css';
 import classNames from 'classnames';
@@ -33,12 +34,13 @@ const OTFormAdmin = (props) => {
 			<OTForm
 				role='admin'
 				action={props.action}
+				currentUserEmail={props.currentUserEmail}
 				initialValues={props.initialValues}
 				onSubmitHandler={onSubmitHandler}
 				toggleAdminInputDisabled={setInputsDiabled}
 				>
 				<Field name="status">
-					{({ input }) => (
+					{({ input, meta }) => (
 						<div className="formInput">
 							<label htmlFor="status">status</label>
 							<select id="status" disabled={props.action === 'edit' && isInputsDisabled} {...input}>
@@ -46,14 +48,17 @@ const OTFormAdmin = (props) => {
 								<option value="approved">approved</option>
 								<option value="denied">denied</option>
 							</select>
+							{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 						</div>
 					)}
 				</Field>
 				<Field name="processorComment">
-					{({ input }) => (
+					{({ input, meta }) => (
 						<div className="formInput">
 							<label htmlFor="processor-comment">processor comment</label>
-							<textarea id="processor-comment" disabled={props.action === 'edit' && isInputsDisabled} {...input} />
+							<textarea id="processor-comment" disabled={props.action === 'edit' && isInputsDisabled} maxLength='250' {...input} />
+							<p className="inputFootnote">Max 250 characters</p>
+							{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 						</div>
 					)}
 				</Field>
@@ -75,5 +80,12 @@ const OTFormAdmin = (props) => {
 	);
 
 }
+
+OTFormAdmin.propTypes = {
+	action:  PropTypes.string.isRequired,
+	currentUserEmail: PropTypes.string,
+	onSubmitHandler: PropTypes.func.isRequired,
+	initialValues: PropTypes.object
+};
 
 export default OTFormAdmin;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { showSpinner, openModal } from '../../../../redux/actions/actionCreators';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout } from '../../../../Components/index';
 import AbsenceFormEmployee from '../../../../Containers/AbsenceForm/AbsenceFormEmployee/AbsenceFormEmployee';
 import { useDispatch } from 'react-redux';
 import { useAddAbsenceRequest } from '../../../../utils/customHooks';
@@ -28,12 +28,12 @@ const AddAbsenceRequestEmployee = () => {
 
 
 	return (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="New Absence Request"
 			description="Submit a request absence for processing.">
 
 			<AbsenceFormEmployee onSubmitHandler={formSubmitHandler} />
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 	);
 
 }

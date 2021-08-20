@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout, AddDataButton } from '../../../../Components';
 import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../../../redux/actions/modalSpinnerActions';
 import OneOTLogAdmin from './OneOTLogAdmin';
+import CustomTablePaginate from '../../../../Containers/CustomTablePaginate/CustomTablePaginate';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
@@ -32,26 +33,19 @@ const AllOTLogsAdmin = () => {
 
 
 	return (logs) && (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="OT Logs"
-			description="Review the status of all logs you have made.">
-			<PageCompos.AddDataButton title="Log OT" path="/log-ot" />
-			<PageCompos.CustomTable>
-				<thead>
-					<tr>
-						<th className={styles.employee}>Employee</th>
-						<th className={styles.dateTime}>Date & Time Started</th>
-						<th className={styles.duration}>Duration (hours)</th>
-						<th className={styles.workSummary}>Work summary</th>
-						<th className={styles.status}>Status</th>
-						<th className={styles.actions}>actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{PageCompos.getListContentToDisplay(5, logs, OneOTLogAdmin)}
-				</tbody>
-			</PageCompos.CustomTable>
-		</PageCompos.MainContentLayout>
+			description="Review, process, and edit OT logs.">
+			<AddDataButton title="Log OT" path="/log-ot" />
+			<CustomTablePaginate items={logs} oneItemComponent={OneOTLogAdmin} maxCol={6}>
+				<th className={styles.employee}>Employee</th>
+				<th className={styles.dateTime}>Date & Time Started</th>
+				<th className={styles.duration}>Duration (hours)</th>
+				<th className={styles.workSummary}>Work summary</th>
+				<th className={styles.status}>Status</th>
+				<th className={styles.actions}>actions</th>
+			</CustomTablePaginate>
+		</MainContentLayout>
 	);
 
 }

@@ -1,0 +1,45 @@
+.modalContainer {
+  font-family: 'Nunito Sans' !important;
+}
+
+.modalTitle {
+  text-transform: capitalize;
+  padding: 10px 0;
+  color: var(--text-white);
+}
+
+.modalTitle.absence {
+  background-color: var(--color-danger);
+}
+
+.modalTitle.log {
+  background-color: var(--color-success);
+}
+
+.modalTitle button {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  color: var(--text-white);
+  font-size: 16px !important;
+}
+
+.eventContent {
+  padding: 10px 20px;
+  text-align: justify;
+}
+
+.eventDetail h3 {
+  font-weight: 600;
+}
+
+.eventDetail {
+  margin-bottom: 20px;
+}
+
+.eventDetail p {
+  background-color: var(--color-input-border);
+  padding: 10px 15px;
+  box-sizing: border-box;
+  border-radius: 5px;
+}

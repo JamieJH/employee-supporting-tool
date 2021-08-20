@@ -1,5 +1,6 @@
 import React from 'react';
 import Avatar from '../Avatar/Avatar';
+import PropTypes from 'prop-types';
 
 import styles from './AvatarNameEmail.module.css';
 
@@ -15,5 +16,11 @@ const AvatarNameEmail = (props) => {
 	);
 
 }
+
+AvatarNameEmail.propTypes = {
+	fullName: PropTypes.string.isRequired,
+	email: PropTypes.string.isRequired,
+	image: PropTypes.string 
+};
 
 export default AvatarNameEmail;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { hideSpinner, openModal, showSpinner } from '../../../../redux/actions/actionCreators';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout } from '../../../../Components/index';
 import UserDetailsForm from '../../../../Containers/UserDetailsForm/UserDetailsForm';
 import { uploadImageAndGetURL } from '../../../../utils/commonMethods'
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import 'firebase/database';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -86,14 +86,14 @@ const EditUser = (props) => {
 	}
 
 	return userDetails && (
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="User Details"
 			description="Review and/or edit user details.">
 			<UserDetailsForm
 				action="edit"
 				userDetails={userDetails}
 				onSubmitHandler={formSubmitHandler} />
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 	);
 }
 

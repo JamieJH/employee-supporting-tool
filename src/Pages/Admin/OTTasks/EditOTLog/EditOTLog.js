@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { hideSpinner, openModal, showSpinner } from '../../../../redux/actions/actionCreators';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import * as PageCompos from '../../../../Components/pageComponents';
+import { MainContentLayout } from '../../../../Components/index';
 import { getUserAssociatedWithId } from '../../../../utils/commonMethods';
 import OTFormAdmin from '../../../../Containers/OTForm/OTFormAdmin';
 import firebase from 'firebase/app';
@@ -23,9 +23,9 @@ const EditOTLog = (props) => {
 				.then(snapshot => {
 					return snapshot.val();
 				})
-				.catch(err => {
-					console.log(err);
-				})
+				// .catch(err => {
+				// 	console.log(err);
+				// })
 
 			if (!logDetails) {
 				dispatch(openModal({
@@ -98,7 +98,7 @@ const EditOTLog = (props) => {
 	}
 
 	return logDetails &&
-		<PageCompos.MainContentLayout
+		<MainContentLayout
 			title="Edit OT Log"
 			description="Make changes to submitted OT logs">
 			<OTFormAdmin
@@ -107,7 +107,7 @@ const EditOTLog = (props) => {
 				onSubmitHandler={onSubmitHandler}
 			/>
 
-		</PageCompos.MainContentLayout>
+		</MainContentLayout>
 		;
 }
 

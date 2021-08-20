@@ -3,6 +3,10 @@
   /* margin: 0 auto; */
 }
 
+.fc * {
+  /* overflow-x: visible !important; */
+}
+
 .fc a {
   color: var(--text-dark);
 }

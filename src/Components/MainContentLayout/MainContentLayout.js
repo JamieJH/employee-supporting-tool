@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styles from './MainContentLayout.module.css';
 
@@ -18,5 +19,12 @@ const MainContentLayout = (props) => {
     </React.Fragment>
   );
 }
+
+MainContentLayout.propTypes = {
+	children: PropTypes.array.isRequired,
+	title: PropTypes.string.isRequired,
+	description: PropTypes.string.isRequired,
+  applyMaxWidth: PropTypes.bool
+};
 
 export default MainContentLayout;
