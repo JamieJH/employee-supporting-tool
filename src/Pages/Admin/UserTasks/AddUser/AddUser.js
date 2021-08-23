@@ -1,6 +1,6 @@
 import React from 'react';
-import { openModal, showSpinner } from '../../../../redux/actions/actionCreators';
-import { useDispatch } from 'react-redux';
+import { addTeamMember, openModal, showSpinner } from '../../../../redux/actions/actionCreators';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { MainContentLayout } from '../../../../Components/index';
 import UserDetailsForm from '../../../../Containers/UserDetailsForm/UserDetailsForm';
@@ -10,6 +10,7 @@ import 'firebase/auth';
 import 'firebase/database';
 
 const AddUser = () => {
+	const currentAdminId = useSelector(state => state.auth.userId);
 	const dispatch = useDispatch();
 	const history = useHistory();
 
@@ -67,6 +68,11 @@ const AddUser = () => {
 			.catch((_) => {
 				modalDetails.content = 'Adding new User failed, please try again later!.';
 			})
+
+		// add team member to current logged in admin if they are the leader 
+		if (userDetails.leaderId === currentAdminId) {
+			dispatch(addTeamMember(uid));
+		}
 
 		return modalDetails;
 	}

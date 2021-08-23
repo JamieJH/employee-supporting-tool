@@ -6,7 +6,8 @@ import FunctionButton from '../FunctionButton/FunctionButton';
 import FileInput from '../FileInput/FileInput';
 import styles from './UserDetailsForm.module.css';
 import classNames from 'classnames';
-
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 const UserDetailsForm = (props) => {
 	const [imageError, setImageError] = useState(null);
@@ -18,46 +19,62 @@ const UserDetailsForm = (props) => {
 		dob: '',
 		gender: 'male',
 		role: 'employee',
+		leaderId: '',
 		email: '',
 		position: '',
-		employeeType: '',
+		employeeType: 'fresher',
 		dateStarted: '',
 		password: '',
 		grossSalary: '',
 		dependents: 0,
 		maxAbsenceDays: 0,
 		externalSalary: false
-
 	});
+	const [admins, setAdmins] = useState(null);
 	const [isInputsDisabled, setIsInputDisabled] = useState(false);
 	const [isExternalSalaryDisabled, setIsExternalSalaryDisabled] = useState(false);
+	const [isTeamLeaderDisabled, setIsTeamLeaderDisabled] = useState(false);
 	const role = useSelector(state => state.auth.role);
 	const todayDate = new Date().toISOString().split("T")[0];
+
+	useEffect(() => {
+		firebase.database().ref('/users').orderByChild('role').equalTo('admin').once('value')
+			.then(snapshot => snapshot.val())
+			.then(admins => {
+				setAdmins(admins);
+			})
+	}, [])
 
 	useEffect(() => {
 		if (props.action === "edit") {
 			setIsInputDisabled(true);
 			setIsExternalSalaryDisabled(true);
+			setIsTeamLeaderDisabled(true);
 		}
 	}, [props.action])
 
 	const onInputChange = (e) => {
-		e.persist();
-
 		setFormDetails(prevDetails => {
-			const newDetails = {...prevDetails};
-			newDetails[e.target.name] = e.target.value;
-
-			if (e.target.name === 'employeeType') {
-				if (e.target.value !== 'fresher') {
-					newDetails.externalSalary = false;
-					setIsExternalSalaryDisabled(true);
-				}
-				else {
-					setIsExternalSalaryDisabled(false);
-				}
+			return {
+				...prevDetails,
+				[e.target.name]: e.target.value
 			}
-			
+		});
+	}
+
+	const onEmployeeTypeChange = (e) => {
+		setFormDetails(prevDetails => {
+			const newDetails = { ...prevDetails };
+			newDetails.employeeType = e.target.value;
+
+			if (e.target.value !== 'fresher') {
+				newDetails.externalSalary = false;
+				setIsExternalSalaryDisabled(true);
+			}
+			else {
+				setIsExternalSalaryDisabled(false);
+			}
+
 			return newDetails;
 		});
 	}
@@ -70,6 +87,23 @@ const UserDetailsForm = (props) => {
 				externalSalary: e.target.checked
 			}
 		})
+	}
+
+	const onUserRoleChange = (e) => {
+		setFormDetails(prevDetails => {
+			const newDetails = { ...prevDetails };
+			newDetails.role = e.target.value;
+
+			if (e.target.value !== 'employee') {
+				newDetails.leaderId = '';
+				setIsTeamLeaderDisabled(true);
+			}
+			else {
+				setIsTeamLeaderDisabled(false);
+			}
+
+			return newDetails;
+		});
 	}
 
 	const formSubmitHandler = (e) => {
@@ -119,11 +153,21 @@ const UserDetailsForm = (props) => {
 	}
 
 	const getUserRoleOptions = () => {
-		if (role === "admin") {
-			return ["employee"];
-		}
-		else {
-			return ["employee", "admin", "superadmin"];
+		const userRoles = (role === "admin")
+			? ["employee"]
+			: ["employee", "admin", "superadmin"];
+
+		return userRoles.map(option => {
+			return <option key={option} value={option}>{option}</option>
+		})
+
+	}
+
+	const getTeamLeaderOptions = () => {
+		if (admins) {
+			return Object.keys(admins).map(userId => {
+				return <option key={userId} value={userId}>{admins[userId].email}</option>
+			})
 		}
 	}
 
@@ -131,6 +175,9 @@ const UserDetailsForm = (props) => {
 		setIsInputDisabled(false);
 		if (formDetails.employeeType === 'fresher') {
 			setIsExternalSalaryDisabled(false);
+		}
+		if (formDetails.role === 'employee') {
+			setIsTeamLeaderDisabled(false);
 		}
 	}
 
@@ -177,7 +224,7 @@ const UserDetailsForm = (props) => {
 					<label htmlFor="employee-type">Employee Type</label>
 					<select required id="employee-type" name="employeeType"
 						value={formDetails.employeeType}
-						onChange={onInputChange}
+						onChange={onEmployeeTypeChange}
 						disabled={isInputsDisabled}
 					>
 						{['fresher', 'probation', 'official'].map(option => {
@@ -189,13 +236,21 @@ const UserDetailsForm = (props) => {
 					<label htmlFor="user-role">User Role</label>
 					<select required id="user-role" name="role"
 						value={formDetails.role}
-						onChange={onInputChange}
-						disabled={isInputsDisabled}
-					>
-						{getUserRoleOptions().map(option => {
-							return <option key={option} value={option}>{option}</option>
-						})}
+						onChange={onUserRoleChange}
+						disabled={isInputsDisabled}>
+						{getUserRoleOptions()}
 					</select>
+				</div>
+				<div className="formInput">
+					<label htmlFor="team-leader">Team Leader</label>
+					<select required id="team-leader" name="leaderId" className={styles.teamLeader}
+						value={formDetails.leaderId}
+						onChange={onInputChange}
+						disabled={isTeamLeaderDisabled}>
+						<option value=""></option>
+						{getTeamLeaderOptions()}
+					</select>
+					<p className='inputFootnote'>Only avalable for user with role of 'employee'</p>
 				</div>
 				<div className="formInput">
 					<label htmlFor="position">Position</label>

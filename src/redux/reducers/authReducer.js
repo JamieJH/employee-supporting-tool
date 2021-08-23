@@ -19,6 +19,10 @@ const pages = {
 		title: "OT Logs",
 		link: "/ot-logs",
 		icon: "fa-business-time",
+	}, {
+		title: "Salary Formula",
+		link: "/salary-formula",
+		icon: "fa-cogs",
 	}],
 	admin: [{
 		title: "All Users",
@@ -29,10 +33,6 @@ const pages = {
 		title: "Salary Payout",
 		link: "/salary-payout",
 		icon: "fa-money-check-alt",
-	}, {
-		title: "Salary Formula",
-		link: "/salary-formula",
-		icon: "fa-cogs",
 	}],
 }
 
@@ -40,7 +40,7 @@ const getPages = (role) => {
 	if (role === 'superadmin') {
 		return pages.employee.concat(pages.admin).concat(pages.superadmin);
 	}
-	else if (role === 'admin') {		
+	else if (role === 'admin') {
 		return pages.employee.concat(pages.admin);
 	}
 	else {
@@ -56,25 +56,45 @@ const initState = {
 	role: null,
 	userDetails: null,
 	pages: null,
+	teamMembers: null
 }
 
 
 const AuthReducer = (state = initState, action) => {
+	let newTeamMembers;
 	switch (action.type) {
 		case actionTypes.LOGIN:
 			const userData = action.payload.userData;
 			const pages = getPages(userData.role);
+			console.log(userData);
 
 			return updateState(state, {
 				isLoggedIn: true,
 				userId: userData.id,
 				role: userData.role,
 				userDetails: userData.details,
-				pages: pages
+				pages: pages,
+				teamMembers: userData.teamMembers
 			})
 
 		case actionTypes.LOGOUT:
 			return updateState(state, { ...initState });
+
+		case actionTypes.ADD_TEAM_MEMBER:
+			newTeamMembers = { ...state.teamMembers };
+			// console.log(newTeamMembers);
+			newTeamMembers[action.payload.memberId] = true;
+			return updateState(state, {
+				teamMembers: newTeamMembers
+			})
+
+		case actionTypes.REMOVE_TEAM_MEMBER:
+			newTeamMembers = { ...state.teamMembers };
+			// console.log(newTeamMembers);
+			delete newTeamMembers[action.payload.memberId]
+			return updateState(state, {
+				teamMembers: newTeamMembers
+			})
 
 		default:
 			return state;

@@ -25,6 +25,7 @@ export const userDetailsPropTypes = PropTypes.exact({
         PropTypes.number,
     ]).isRequired,
     externalSalary: PropTypes.bool.isRequired,
+    leaderId: PropTypes.string,
 })
 
 export const absenceRequestDetailsPropTypes = PropTypes.exact({
@@ -53,7 +54,6 @@ export const OTLogDetailsPropTypes = PropTypes.exact({
 })
 
 export const SalaryFormulaFormPropTypes = {
-    children: PropTypes.element.isRequired,
 	formula: PropTypes.object.isRequired,
 	isInputsDisabled: PropTypes.bool.isRequired,
     saveEditHandler: PropTypes.func.isRequired

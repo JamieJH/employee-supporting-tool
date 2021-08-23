@@ -14,19 +14,28 @@ const SalaryProgress = () => {
 	const userId = useSelector(state => state.auth.userId);
 	const gross = useSelector(state => state.auth.userDetails.grossSalary);
 	const maxAbsenceDays = useSelector(state => state.auth.userDetails.maxAbsenceDays);
-	const [salaryHistory, setSalaryHistory] = useState(null);
+	const [salaryHistory, setSalaryHistory] = useState([]);
 	const [totalOTHours, setTotalOTHours] = useState(null);
 	const [totalAbsenceDays, setTotalAbsenceDays] = useState(null);
+	const [year, setYear] = useState(new Date().getFullYear());
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		dispatch(showSpinner());
-		firebase.database().ref('/salary-histories').child(userId).limitToLast(12)
+
+		firebase.database().ref('/salary-histories').child(userId).orderByKey()
+			.startAt(year.toString() + "-")
+			.endAt(year.toString() + "-\uf8ff")
 			.once('value')
 			.then(snapshot => snapshot.val())
 			.then(history => {
+				if (!history) {
+					setSalaryHistory([]);
+				}
+				else {
+					setSalaryHistory(history);
+				}
 				dispatch(hideSpinner());
-				setSalaryHistory(history);
 			})
 			.catch(() => {
 				dispatch(openModal({
@@ -34,15 +43,27 @@ const SalaryProgress = () => {
 				}))
 			})
 
-		getOTHoursInTimePeriod(userId).then(otHours => {
-			setTotalOTHours(otHours)
-		})
+	}, [userId, dispatch, year])
 
-		getApprovedAbsenceDaysCurrentYear(userId).then(absenceDays => {
-			setTotalAbsenceDays(absenceDays)
-		})
+	useEffect(() => {
+		dispatch(showSpinner());
 
+		const promises = [
+			getOTHoursInTimePeriod(userId),
+			getApprovedAbsenceDaysCurrentYear(userId)
+		]
 
+		Promise.all(promises)
+			.then(([otHours, absenceDays]) => {
+				setTotalOTHours(otHours);
+				setTotalAbsenceDays(absenceDays);
+				dispatch(hideSpinner());
+			})
+			.catch(() => {
+				dispatch(openModal({
+					content: 'Something went wrong, cannot get current progress at this time!'
+				}))
+			})
 	}, [userId, dispatch])
 
 	const getOrCreateTooltip = (chart) => {
@@ -95,10 +116,20 @@ const SalaryProgress = () => {
 		}
 
 		const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
-
+	
 		tooltipEl.style.opacity = 0.9;
 		tooltipEl.style.left = positionX + tooltip.caretX + 'px';
-		tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+
+		// display tooltip below the data point if there's enough space, display above otherwise
+		// because too long tooltip will clash with the table below
+		if (tooltip.caretY + tooltipEl.clientHeight > chart.canvas.clientHeight) {
+			tooltipEl.style.top = 'auto';
+			tooltipEl.style.bottom = (chart.canvas.clientHeight - tooltip.caretY) + 'px';
+		}
+		else {
+			tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+			tooltipEl.style.bottom = 'auto';
+		}
 	};
 
 	const getChartData = () => {
@@ -148,6 +179,9 @@ const SalaryProgress = () => {
 		return <tr><td></td></tr>
 	}
 
+	const onYearInputChange = (e) => {
+		setYear(e.target.value);
+	}
 
 	const options = {
 		interaction: {
@@ -175,16 +209,30 @@ const SalaryProgress = () => {
 	};
 
 
-	return salaryHistory && (
+	return (
 
 		<MainContentLayout
 			title='Salary Progress'
 			description='See salary history of the most recent 12 months and review current month/year progress'
 			applyMaxWidth={true}>
 
+			<form className={styles.yearFilter}>
+				<div className='formInput'>
+					<label htmlFor="year">Year</label>
+					<input type="number" value={year} min='2010' max={new Date().getFullYear()} onChange={onYearInputChange} />
+					{/* <button>Show</button> */}
+				</div>
+			</form>
+
 			<div className={styles.historyChart}>
 				<Line height={'100%'} data={getChartData()} options={options} />
+				{salaryHistory.length === 0 && (
+					<div className={styles.noData}>
+						<p>There is no salary history for this year</p>
+					</div>
+				)}
 			</div>
+
 
 			<div className={styles.progress}>
 				<h3>Current progress</h3>

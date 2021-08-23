@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MainContentLayout, AddDataButton } from '../../../../Components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { showSpinner } from '../../../../redux/actions/modalSpinnerActions';
 import OneOTLogAdmin from './OneOTLogAdmin';
 import CustomTablePaginate from '../../../../Containers/CustomTablePaginate/CustomTablePaginate';
@@ -11,6 +11,8 @@ import styles from './AllOTLogsAdmin.module.css';
 
 const AllOTLogsAdmin = () => {
 	const [logs, setLogs] = useState(null);
+	const teamMembers = useSelector(state => state.auth.teamMembers);
+	const role = useSelector(state => state.auth.role);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -22,14 +24,18 @@ const AllOTLogsAdmin = () => {
 			})
 			.then(data => {
 				const logs = [];
+				// if logged in user is admin then only get details of their team members, get all if superadmin
 				for (const [id, details] of Object.entries(data)) {
+					if (role === 'admin' && !teamMembers[details.employeeId]) {
+						continue;
+					}
 					details.id = id;
 					logs.push(details);
 				}
 
 				setLogs(logs);
 			})
-	}, [dispatch])
+	}, [dispatch, role, teamMembers])
 
 
 	return (logs) && (

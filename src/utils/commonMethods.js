@@ -90,7 +90,7 @@ export const getDateLimitsAsString = (type, day = null, month = null, year = nul
 	let endDate
 	const limitYear = year || today.getFullYear();
 	const limitDay = day || 27;
-	if (type === 'ot') {
+	if (type === 'month') {
 		const limitMonth = month ? month - 1 : today.getMonth();  	// minus 1 because month start at 0
 		startDate = new Date(limitYear, limitMonth - 1, limitDay).toLocaleDateString('en-uk');
 		endDate = new Date(limitYear, limitMonth, limitDay).toLocaleDateString('en-uk');
@@ -113,7 +113,7 @@ export const getDateLimitsAsString = (type, day = null, month = null, year = nul
 // if getTotal is true, get total hours only, else get the ot logs objects
 export const getOTHoursInTimePeriod = async (userId, getTotal = true, period = 'month', month = null) => {
 	const { startDate, endDate } = (period === 'month')
-		? getDateLimitsAsString('ot', null, month)
+		? getDateLimitsAsString('month', null, month)
 		: getDateLimitsAsString();
 
 	return firebase.database().ref('/ot-logs')

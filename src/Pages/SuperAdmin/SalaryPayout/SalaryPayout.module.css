@@ -1,5 +1,6 @@
 .salaryPayoutForm, .amountTables {
 	margin-bottom: 30px;
+	position: relative;
 }
 
 .salaryPayoutForm > * {
@@ -26,4 +27,12 @@
 .calculateButton:hover {
 	background-color: var(--theme-dark-bg);
 	color: var(--text-white);
+}
+
+.amountTables h3 {
+	margin-bottom: 10px;
+}
+
+.amountTables h3 span {
+	text-transform: capitalize;
 }

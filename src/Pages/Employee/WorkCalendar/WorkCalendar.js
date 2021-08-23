@@ -67,9 +67,9 @@ const WorkCalendar = () => {
   }, [dispatch, userId])
 
 
-  const addTooltipData = (info) => {
-    info.el.setAttribute("data-tooltip", info.event.extendedProps.tooltipData);
-  }
+  // const addTooltipData = (info) => {
+  //   info.el.setAttribute("data-tooltip", info.event.extendedProps.tooltipData);
+  // }
 
   const onEventClick = (info) => {
     setEventModal({
@@ -93,7 +93,7 @@ const WorkCalendar = () => {
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
         initialEvents={events}
-        eventDidMount={addTooltipData}
+        // eventDidMount={addTooltipData}
         eventClick={onEventClick}
       />
       }

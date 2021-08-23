@@ -119,9 +119,7 @@ const OfficialFormulaForm = (props) => {
 				{({ input, meta }) => (
 					<div className="formInput">
 						<label htmlFor={fieldSubtractName}>subtract by</label>
-						<div className={styles.percentageWithOperationsForm}>
-							<input type='number' id={fieldSubtractName} min='0' step='10000' disabled={props.isInputsDisabled} {...input} />
-						</div>
+						<input type='number' id={fieldSubtractName} min='0' step='10000' disabled={props.isInputsDisabled} {...input} />
 						{meta.touched && meta.error && <span className="fieldError">{meta.error}</span>}
 					</div>
 				)}

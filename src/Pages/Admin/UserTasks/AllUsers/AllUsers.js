@@ -11,27 +11,30 @@ import styles from './AllUsers.module.css';
 
 const AllUsers = () => {
 	const [employees, setEmployees] = useState(null);
+	const teamMembers = useSelector(state => state.auth.teamMembers);
 	const role = useSelector(state => state.auth.role);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		dispatch(showSpinner());
-		let usersDbRef = firebase.database().ref('/users').orderByChild('role');
-		usersDbRef = (role === 'admin') ? usersDbRef.equalTo('employee') : usersDbRef;
-		usersDbRef.once('value')
+		firebase.database().ref('/users').once('value')
 			.then(snapshot => {
 				return snapshot.val();
 			})
 			.then(users => {
 				const employees = [];
+				// if logged in user is admin then only get details of their team members, get all if superadmin
 				for (const [id, userDetails] of Object.entries(users)) {
+					if (role === 'admin' && !teamMembers[id]) {
+						continue;
+					}
 					userDetails.id = id;
 					employees.push(userDetails);
 				}
 				dispatch(hideSpinner())
 				setEmployees(employees);
 			})
-	}, [dispatch, role])
+	}, [dispatch, role, teamMembers])
 
 	return (employees) && (
 		<MainContentLayout

@@ -16,8 +16,9 @@ const AllOTLogsEmployee = React.lazy(() => import('./Employee/OTTasks/AllOTLogs/
 const LogOTAdmin = React.lazy(() => import('./Admin/OTTasks/LogOT/LogOTAdmin'));
 const LogOTEmployee = React.lazy(() => import('./Employee/OTTasks/LogOT/LogOTEmployee'));
 const EditOTLog = React.lazy(() => import('./Admin/OTTasks/EditOTLog/EditOTLog'));
-const SalaryFormula = React.lazy(() => import('./SuperAdmin/SalaryTasks/SalaryFormula/SalaryFormula'));
-const SalaryPayout = React.lazy(() => import('./SuperAdmin/SalaryTasks/SalaryPayout/SalaryPayout'));
+const SalaryFormulaEmployee = React.lazy(() => import('./Employee/SalaryFormula/SalaryFormulaEmployee'));
+const SalaryFormulaAdmin = React.lazy(() => import('./SuperAdmin/SalaryFormula/SalaryFormulaAdmin'));
+const SalaryPayout = React.lazy(() => import('./SuperAdmin/SalaryPayout/SalaryPayout'));
 const SalaryProgress = React.lazy(() => import('./Employee/SalaryProgress/SalaryProgress'));
 
 export { 
@@ -25,5 +26,6 @@ export {
     AbsenceRequestsAdmin, AbsenceRequestsEmployee, AddAbsenceRequestAdmin,
     AddAbsenceRequestEmployee, EditAbsenceRequest, AllOTLogsAdmin,
     AllOTLogsEmployee, LogOTAdmin, LogOTEmployee, EditOTLog,
-    SalaryFormula, SalaryPayout, SalaryProgress, WorkCalendar    
+    SalaryFormulaEmployee, SalaryPayout, SalaryProgress, WorkCalendar,
+    SalaryFormulaAdmin
 }

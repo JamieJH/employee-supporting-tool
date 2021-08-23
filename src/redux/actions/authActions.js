@@ -12,3 +12,17 @@ export const logout = () => {
         type: actionTypes.LOGOUT,
     }
 }
+
+export const addTeamMember = (memberId) => {
+    return {
+        type: actionTypes.ADD_TEAM_MEMBER,
+        payload: {memberId}
+    }
+}
+
+export const removeTeamMember = (memberId) => {
+    return {
+        type: actionTypes.REMOVE_TEAM_MEMBER,
+        payload: {memberId}
+    }
+}
