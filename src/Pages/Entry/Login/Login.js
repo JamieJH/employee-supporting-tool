@@ -22,20 +22,20 @@ const Login = () => {
 	const logginHandler = async (e) => {
 		e.preventDefault();
 		const userIdEmail = {};
-		let isCorrectLogin = false;
-		
+		let isLoggedIn = false;
+
 		if (!email && !password) {
 			setMessage('Please enter email and password');
 			return
 		}
-		
+
 		dispatch(showSpinner());
 		await firebase.auth().signInWithEmailAndPassword(email, password)
 			.then(userCredentials => {
 				const user = userCredentials.user;
 				userIdEmail.id = user.uid;
 				userIdEmail.email = user.email;
-				isCorrectLogin = true;
+				isLoggedIn = true;
 			})
 			.catch((error) => {
 				if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
@@ -48,30 +48,40 @@ const Login = () => {
 				}
 			});
 
-		if (isCorrectLogin) {
+		if (isLoggedIn) {
 			const userDbRef = firebase.database().ref('/users/' + userIdEmail.id);
+			const teamMembers = {};
 
-			userDbRef.once('value')
+			const user = await userDbRef.once('value')
 				.then(snapshot => {
 					return snapshot.val();
 				})
-				.then(user => {
-					console.log(user);
-					const role = user.role;
-					delete user.role;
 
-					user.email = userIdEmail.email;
+			if (user.role === 'admin') {
+				// an object containg this admin's team member
+				await firebase.database().ref('/users/')
+					.orderByChild('leaderId').equalTo(userIdEmail.id).once('value')
+					.then(snapshot => snapshot.val())
+					.then(members => {
+						Object.keys(members).forEach(userId => {
+							teamMembers[userId] = true;
+						})
+					})
+			}
 
-					dispatch(login({
-						id: userIdEmail.id,
-						role: role,
-						details: user
-					}))
-					dispatch(hideSpinner());
-					history.push('/')
-				});
+			console.log(teamMembers);
+			const role = user.role;
+
+			dispatch(login({
+				id: userIdEmail.id,
+				role,
+				teamMembers,
+				details: user
+			}))
+			dispatch(hideSpinner());
+			history.push('/');
+
 		}
-
 	}
 
 	const emailOnChangeHandler = (e) => {

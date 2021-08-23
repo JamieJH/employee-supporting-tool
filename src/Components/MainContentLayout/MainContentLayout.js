@@ -21,7 +21,6 @@ const MainContentLayout = (props) => {
 }
 
 MainContentLayout.propTypes = {
-	children: PropTypes.array.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
   applyMaxWidth: PropTypes.bool

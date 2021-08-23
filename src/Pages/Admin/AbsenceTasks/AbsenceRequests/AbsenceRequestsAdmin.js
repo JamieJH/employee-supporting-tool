@@ -3,7 +3,7 @@ import firebase from 'firebase/app';
 import 'firebase/database';
 import { MainContentLayout, AddDataButton } from '../../../../Components';
 import OneAbsenceRequest from './OneAbsenceRequest';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { hideSpinner, showSpinner } from '../../../../redux/actions/modalSpinnerActions';
 import CustomTablePaginate from '../../../../Containers/CustomTablePaginate/CustomTablePaginate';
 
@@ -11,6 +11,8 @@ import styles from './AbsenceRequestsAdmin.module.css';
 
 const AbsenceRequestsAdmin = () => {
 	const [requests, setRequests] = useState(null);
+	const teamMembers = useSelector(state => state.auth.teamMembers);
+	const role = useSelector(state => state.auth.role);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -22,7 +24,11 @@ const AbsenceRequestsAdmin = () => {
 			})
 			.then(data => {
 				const requests = [];
+				// if logged in user is admin then only get details of their team members, get all if superadmin
 				for (const [id, details] of Object.entries(data)) {
+					if (role === 'admin' && !teamMembers[details.employeeId]) {
+						continue;
+					}
 					details.id = id;
 					requests.push(details);
 				}
@@ -30,7 +36,7 @@ const AbsenceRequestsAdmin = () => {
 				dispatch(hideSpinner());
 				setRequests(requests);
 			})
-	}, [dispatch]);
+	}, [dispatch, role, teamMembers]);
 
 
 	return requests && (

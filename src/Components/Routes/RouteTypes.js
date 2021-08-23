@@ -19,13 +19,35 @@ export const ProtectedRoute = (props) => {
 
 export const SharedRoute = (props) => {
 	const loggedInRole = useSelector(state => state.auth.role);
+	
+	const {
+		employeeComponent: ComponentEmployee,
+		adminComponent: ComponentAdmin,
+		superAdminComponent: ComponentSuperAdmin,
+		...args 
+	} = props;
 
-	const { employeeComponent: ComponentEmployee, adminComponent: ComponentAdmin, ...args } = props;
+	const getComponentFromRole = (props) => {
+		const configurations = {
+			'employee': () => {
+				return ComponentEmployee;
+			},
+			'admin': () => {
+				return ComponentAdmin;
+			},
+			'superadmin': () => {
+				return ComponentSuperAdmin || ComponentAdmin;
+			}
+		}
+
+		const RoleComponent = configurations[loggedInRole]();		
+		return <RoleComponent {...props} />
+	}
+
+
 	return (
 		<Route {...args} exact render={props => {
-			return (loggedInRole === 'employee')
-				? <ComponentEmployee {...props} />
-				: <ComponentAdmin {...props} />
+			return getComponentFromRole(props);
 		}} />
 	);
 

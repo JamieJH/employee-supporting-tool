@@ -8,7 +8,8 @@ import {
 	AbsenceRequestsAdmin, AbsenceRequestsEmployee, AddAbsenceRequestAdmin,
 	AddAbsenceRequestEmployee, EditAbsenceRequest, AllOTLogsAdmin,
 	AllOTLogsEmployee, LogOTAdmin, LogOTEmployee, EditOTLog,
-	SalaryFormula, SalaryPayout, SalaryProgress, WorkCalendar
+	SalaryFormulaEmployee, SalaryPayout, SalaryProgress, WorkCalendar,
+	SalaryFormulaAdmin
 } from './Pages/index';
 import { Modal, Spinner } from './Components';
 
@@ -52,9 +53,11 @@ const App = () => {
 								<SharedRoute path='/ot-logs' exact employeeComponent={AllOTLogsEmployee} adminComponent={AllOTLogsAdmin} />
 								<SharedRoute path='/log-ot' exact employeeComponent={LogOTEmployee} adminComponent={LogOTAdmin} />
 
-								<ProtectedRoute path="/salary-formula" exact
-									component={SalaryFormula}
-									allowedRoles={["superadmin"]} />
+								<SharedRoute path="/salary-formula" exact
+									employeeComponent={SalaryFormulaEmployee}
+									adminComponent={SalaryFormulaEmployee}
+									superAdminComponent={SalaryFormulaAdmin} />
+
 								<ProtectedRoute path="/salary-payout" exact
 									component={SalaryPayout}
 									allowedRoles={["superadmin"]} />

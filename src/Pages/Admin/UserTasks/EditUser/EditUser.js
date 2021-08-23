@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { hideSpinner, openModal, showSpinner } from '../../../../redux/actions/actionCreators';
+import { hideSpinner, openModal, removeTeamMember, showSpinner } from '../../../../redux/actions/actionCreators';
 import { MainContentLayout } from '../../../../Components/index';
 import UserDetailsForm from '../../../../Containers/UserDetailsForm/UserDetailsForm';
 import { uploadImageAndGetURL } from '../../../../utils/commonMethods'
 import firebase from 'firebase/app';
 import 'firebase/database';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 
 const EditUser = (props) => {
 	const [userDetails, setUserDetails] = useState(null);
+	const role = useSelector(state => state.auth.role);
 	const dispatch = useDispatch();
 	const history = useHistory();
 
@@ -38,6 +39,7 @@ const EditUser = (props) => {
 	}
 
 	const editUserHandler = async (newUserDetails, uploadedImageFile) => {
+		// remove the fields that was not changed from newUserDetails
 		for (let field in newUserDetails) {
 			if (userDetails[field] && userDetails[field] === newUserDetails[field]) {
 				delete newUserDetails[field];
@@ -55,7 +57,7 @@ const EditUser = (props) => {
 
 		// upload image to firebase and get url
 		if (uploadedImageFile) {
-			const imageName = newUserDetails.fullName.replaceAll(' ', '-') + '-' + userDetails.id;
+			const imageName = userDetails.fullName.replaceAll(' ', '-') + '-' + userDetails.id;
 			const imageURL = await uploadImageAndGetURL(uploadedImageFile, imageName);
 			if (!imageURL) {
 				return {
@@ -66,7 +68,7 @@ const EditUser = (props) => {
 			newUserDetails.image = imageURL;
 		}
 
-		// update user document
+		// update user details in database
 		const modalDetails = await firebase.database().ref('users/' + userDetails.id)
 			.update(newUserDetails)
 			.then(() => {
@@ -81,6 +83,11 @@ const EditUser = (props) => {
 					content: 'Update has failed, please try again later!'
 				}
 			})
+
+		// remove team member from current logged in admin if the leader id is changed
+		if (role === 'admin' && newUserDetails.leaderId) {
+			dispatch(removeTeamMember(userDetails.id));
+		}
 
 		return modalDetails;
 	}
