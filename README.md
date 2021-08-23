@@ -23,3 +23,24 @@
 - Create/Edit/Approve/Decline absent request, OT logs – both
 - Change some settings, formula – superadmin
 - Add new member(create new account)
+
+## Completed Features
+
+#### Employee
+- View the working calendar including approved absence days and OT logs.
+- View Salary History by year, current month progress (gross, OT log pay so far) and absence days taken this year.
+- View all their submitted OT logs and submit a new one.
+- View all their requested absence days and submit a new one.
+- View how salary is calculated.
+- Each Employee is assigned an Admin (team leader), all requests are processed by this Admin.
+
+#### Admin
+- Includes all Employee features and:
+- View, Add, and Edit user details of team members.
+- View, Add, Edit, and Process OT logs and absence days of team members.
+
+
+#### Superadmin
+- Include all Employee and Admin features and:
+- Edit Salary Formula for each type of employee (Fresher, Probation, and Official).
+- Calculate and Confirm monthly payout for employees.
